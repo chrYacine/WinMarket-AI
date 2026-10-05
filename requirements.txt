@@ -1,0 +1,30 @@
+python-dotenv>=1.0.1
+pydantic>=2.7.0
+numpy>=1.26.0
+scikit-learn>=1.5.0
+PyMuPDF>=1.24.0
+python-docx>=1.1.0
+reportlab>=4.2.0
+requests>=2.32.0
+httpx>=0.27.0
+anthropic>=0.40.0
+
+# Interface web FastAPI (seule interface depuis le retrait de Streamlit, lot 43)
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+jinja2>=3.1.4
+python-multipart>=0.0.12
+
+# Couche SaaS V3 : PostgreSQL + auth + sessions
+sqlalchemy>=2.0.30
+alembic>=1.13.2
+pg8000>=1.31.5
+argon2-cffi>=23.1.0
+itsdangerous>=2.2.0
+
+# Lot 51 : RAG hybride (lexical + vectoriel, PostgreSQL/pgvector uniquement)
+# pgvector : type SQLAlchemy + opérateurs de distance, un client, jamais un serveur.
+# fastembed : embeddings locaux via ONNX (onnxruntime), délibérément SANS torch — voir
+# src/rag/embeddings.py pour la justification du modèle choisi.
+pgvector>=0.5.0
+fastembed>=0.8.0

@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/app.css?v={{ asset_version('css/app.css') }}">{% block app_extra_css %}{% endblock %}{% endblock %}
+
+{% block body %}
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <a class="brand" href="/"><span class="brand-mark">W</span> WinMarket AI</a>
+
+    {% if user %}
+    <div class="sidebar-account">
+      <div class="sidebar-account-name">{{ user.full_name }}</div>
+      <div class="sidebar-account-email">{{ user.email }}</div>
+      <div class="sidebar-account-links">
+        <a href="/account">Mon compte</a>
+        <a href="/pricing">Changer d'offre</a>
+      </div>
+      <form method="post" action="/logout">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="sidebar-logout">Se déconnecter</button>
+      </form>
+    </div>
+    {% endif %}
+
+    {% if organizations and organizations|length > 1 %}
+    <div class="sidebar-org-switcher">
+      <label for="org-switcher-select" class="sidebar-panel-title">Organisation</label>
+      <select id="org-switcher-select" name="organization_id">
+        {% for org in organizations %}
+        <option value="{{ org.id }}" {{ 'selected' if org.id == current_organization_id else '' }}>{{ org.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+
+    <nav class="sidebar-nav" aria-label="Navigation application">
+      <a class="sidebar-link {{ 'active' if active_nav == 'analyser' else '' }}" href="/app/analyser">
+        Nouvelle analyse
+      </a>
+      <a class="sidebar-link {{ 'active' if active_nav == 'historique' else '' }}" href="/app/historique">
+        Historique
+      </a>
+      <a class="sidebar-link {{ 'active' if active_nav == 'connaissances' else '' }}" href="/app/base-connaissances">
+        Base de connaissances
+      </a>
+      <a class="sidebar-link {{ 'active' if active_nav == 'parametres' else '' }}" href="/app/parametres">
+        Paramètres de scoring
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-panel-title">Aperçu</div>
+      <div class="sidebar-total">
+        <div class="kpi-label">Analyses réalisées</div>
+        <div class="kpi-value">{{ sidebar_stats.total if sidebar_stats else 0 }}</div>
+      </div>
+      <div class="sidebar-stat-list">
+        <div class="sidebar-stat">
+          <span class="sidebar-stat-label"><span class="sidebar-stat-dot go"></span>GO</span>
+          <span class="sidebar-stat-value">{{ sidebar_stats.go if sidebar_stats else 0 }}</span>
+        </div>
+        <div class="sidebar-stat">
+          <span class="sidebar-stat-label"><span class="sidebar-stat-dot reserve"></span>Sous réserve</span>
+          <span class="sidebar-stat-value">{{ sidebar_stats.reserve if sidebar_stats else 0 }}</span>
+        </div>
+        <div class="sidebar-stat">
+          <span class="sidebar-stat-label"><span class="sidebar-stat-dot nogo"></span>NO-GO</span>
+          <span class="sidebar-stat-value">{{ sidebar_stats.nogo if sidebar_stats else 0 }}</span>
+        </div>
+      </div>
+      <a class="sidebar-back" href="/">← Retour au site</a>
+    </div>
+  </aside>
+
+  <main class="app-main" id="main-content">
+    {% block app_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}{% block app_extra_scripts %}{% endblock %}{% endblock %}

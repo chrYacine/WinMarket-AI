@@ -1,0 +1,227 @@
+{% extends "app_shell.html" %}
+{% block title %}Nouvelle analyse — WinMarket AI{% endblock %}
+
+{% block app_content %}
+<div class="page-title">Nouvelle analyse</div>
+<p class="page-subtitle">Importez un appel d'offres pour lancer l'extraction, le scoring et la génération des livrables.</p>
+
+<div style="margin-bottom:28px">
+  <div class="section-heading">
+    <h3>Disponibilité de l'équipe</h3>
+    <button class="btn btn-elevated" id="capacity-open" type="button">
+      <span class="btn-icon-chip">⚙️</span>
+      Modifier les disponibilités
+    </button>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-tile">
+      <div class="kpi-label">Charge équipe</div>
+      <div class="kpi-value" id="capacity-charge-value">–</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Disponibilité</div>
+      <div class="kpi-value" id="capacity-dispo-value">–</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Projets en cours</div>
+      <div class="kpi-value" id="capacity-projects-value">–</div>
+    </div>
+  </div>
+</div>
+
+<div id="analyze-form-panel">
+  <form id="analyze-form" class="card">
+    <div class="section-heading"><h3>Source de l'appel d'offres</h3></div>
+
+    <div class="option-grid source-modes" role="radiogroup" aria-label="Source de l'appel d'offres">
+      <label class="option-card" data-mode="stock">
+        <input type="radio" name="mode" value="stock" checked>
+        <span class="option-icon">📂</span>
+        <span class="option-label">Appels d'offres en stock</span>
+      </label>
+      <label class="option-card" data-mode="upload">
+        <input type="radio" name="mode" value="upload">
+        <span class="option-icon">📎</span>
+        <span class="option-label">Importer un fichier</span>
+      </label>
+      <label class="option-card" data-mode="paste">
+        <input type="radio" name="mode" value="paste">
+        <span class="option-icon">✍️</span>
+        <span class="option-label">Saisie texte libre</span>
+      </label>
+      <label class="option-card" data-mode="dossier">
+        <input type="radio" name="mode" value="dossier">
+        <span class="option-icon">🗂️</span>
+        <span class="option-label">Dossier d'appel d'offres (plusieurs pièces)</span>
+      </label>
+    </div>
+
+    <div id="panel-stock">
+      <div class="field">
+        <label for="example-select">Choisir un exemple</label>
+        <select class="select" id="example-select">
+          <option value="">— Sélectionner —</option>
+          {% for ex in examples %}
+          <option value="{{ ex.id }}">{{ ex.label }}</option>
+          {% endfor %}
+        </select>
+        {% if not examples %}
+        <p class="field-hint">Aucun exemple disponible dans data/ao_examples/.</p>
+        {% endif %}
+      </div>
+      <pre id="example-preview" class="card surface-2" style="white-space:pre-wrap;font-size:.8rem;max-height:280px;overflow:auto" hidden></pre>
+    </div>
+
+    <div id="panel-upload" hidden>
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer votre appel d'offres">
+        <div class="dropzone-icon">📎</div>
+        <h3>Déposez votre appel d'offres</h3>
+        <p class="text-tertiary" style="margin-top:8px">Glissez vos documents ici ou sélectionnez-les depuis votre ordinateur.</p>
+        <div class="dropzone-formats">
+          <span class="chip">PDF</span><span class="chip">DOCX</span><span class="chip">TXT</span><span class="chip">MD</span>
+        </div>
+        <p class="text-secondary" id="file-name" style="margin-top:14px;font-weight:600" hidden></p>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.docx,.txt,.md" class="visually-hidden">
+    </div>
+
+    <div id="panel-paste" hidden>
+      <div class="field">
+        <label for="paste-textarea">Coller le contenu de l'appel d'offres</label>
+        <textarea class="textarea" id="paste-textarea" placeholder="Collez ici le texte brut de l'appel d'offres..."></textarea>
+      </div>
+    </div>
+
+    {# Lot 47 bis — ONE analysis from the pieces of a tender file. The limits shown here come from the server's own
+       configuration; the browser only helps, the server re-checks everything. These pieces are the tender itself:
+       they are never added to "Base de connaissances" (the account's own professional references). #}
+    <div id="panel-dossier" hidden>
+      {# Lot 50 bis §3 — populated only when this page was opened via "Ajouter les pièces restantes"
+         (?add_pieces_from=<job_id>): the pieces already in that job's dossier, each still individually
+         includable/excludable before a fresh combined preview. Empty/hidden for an ordinary new dossier. #}
+      <div id="add-pieces-banner" class="callout callout-info" hidden></div>
+      <div id="add-pieces-original" hidden>
+        <p class="field-hint" style="margin-top:0">Pièces déjà dans le dossier d'origine — décochez celles à ne pas reprendre :</p>
+        <ul class="dossier-list" id="add-pieces-original-list"></ul>
+      </div>
+      <p class="field-hint" id="dossier-rule" style="margin-top:0">{{ dossier.max_files }} fichiers maximum, dont {{ dossier.max_annexes }} annexes maximum</p>
+      <p class="field-hint">
+        Formats acceptés : PDF, DOCX, TXT, MD. Chaque pièce est vérifiée avant le lancement : une pièce refusée bloque tout le dossier.
+        Ces pièces sont l'appel d'offres lui-même : elles ne sont pas ajoutées à votre base de connaissances. Un dossier incomplet reste recevable ;
+        les données absentes rendront l'analyse incomplète plutôt que favorable.
+      </p>
+      <div class="dossier-slots">
+      {% for slot in dossier.slots %}
+        <div class="dossier-slot" data-slot="{{ slot.field }}">
+          <label for="dossier-input-{{ slot.field }}" class="dossier-slot-label">{{ slot.label }}</label>
+          <span class="field-hint" id="dossier-hint-{{ slot.field }}">
+            {% if slot.field == 'annexes' %}Sélection de {{ annex_words }} fichiers maximum
+            {% elif slot.field == 'autres' %}Plusieurs fichiers possibles — ex. {{ dossier.autre_examples | join(', ') }}. Pas une liste fermée : une pièce mal nommée ou mal classée n'est jamais rejetée pour ce seul motif.
+            {% else %}Un fichier maximum{% endif %}
+          </span>
+          <input type="file" class="input" id="dossier-input-{{ slot.field }}" accept="{{ dossier.formats | join(',') }}"
+                 {% if slot.field in ('annexes', 'autres') %}multiple{% endif %}
+                 aria-describedby="dossier-hint-{{ slot.field }} dossier-list-{{ slot.field }}">
+          <ul class="dossier-list" id="dossier-list-{{ slot.field }}" aria-live="polite"></ul>
+        </div>
+      {% endfor %}
+      </div>
+      <div class="dossier-total" id="dossier-total" data-bytes="0" role="status" aria-live="polite">0,0 Mo / {{ dossier.max_total_label }}</div>
+      <div id="dossier-error" class="callout callout-danger" role="alert" tabindex="-1" hidden></div>
+      <p class="text-tertiary" id="dossier-status" role="status" aria-live="polite" style="font-size:.85rem;min-height:1.2em"></p>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" id="submit-analyze" disabled>Lancer l'analyse</button>
+  </form>
+</div>
+
+{# Lot 50 §3 — the admission table shown BETWEEN sending a dossier and actually starting its analysis: every
+   piece's declared/proposed/final category, its security state, its plausible link to this dossier, and
+   whether it will be taken into account — nothing here is a scoring result, and nothing starts until the
+   user confirms this table (or corrects it). #}
+<div id="dossier-preview-panel" class="card" hidden>
+  <div class="section-heading"><h3>Pièces reçues — à confirmer avant l'analyse</h3></div>
+  <p class="text-tertiary" style="font-size:.85rem">
+    Chaque pièce est proposée avec sa catégorie, son état de sécurité et son lien probable avec ce dossier — vous pouvez
+    corriger la catégorie, inclure ou exclure une pièce, et préciser vous-même le lien d'une pièce incertaine. Rien n'est
+    encore analysé.
+  </p>
+  <div class="table-wrap"><table class="data-table" aria-label="Pièces du dossier">
+    <thead><tr>
+      <th>Nom</th><th>Catégorie</th><th>Sécurité</th><th>Lien au dossier</th><th>Pris en compte</th><th>Votre précision</th>
+    </tr></thead>
+    <tbody id="dossier-preview-rows"></tbody>
+  </table></div>
+  <div id="dossier-preview-rejected" hidden></div>
+  <div id="dossier-preview-error" class="callout callout-danger" role="alert" tabindex="-1" hidden></div>
+  <p class="text-tertiary" id="dossier-preview-status" role="status" aria-live="polite" style="font-size:.85rem;min-height:1.2em"></p>
+  <div style="display:flex;gap:12px;margin-top:12px">
+    <button type="button" class="btn btn-secondary" id="dossier-preview-back">← Modifier les pièces</button>
+    <button type="button" class="btn btn-primary" id="dossier-preview-confirm" style="flex:1">Confirmer et lancer l'analyse</button>
+  </div>
+</div>
+
+<div id="progress-panel" class="card progress-panel" hidden>
+  <div class="spinner"></div>
+  <div class="progress-message" id="progress-message">Initialisation...</div>
+  <div class="step-progress" id="progress-steps"></div>
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-bar-fill" style="width:4%"></div></div>
+</div>
+
+<div id="analyze-error" class="card" hidden>
+  <div class="error-card">
+    <span>⚠️</span>
+    <div>
+      <strong>L'analyse n'a pas pu être finalisée.</strong>
+      <p id="analyze-error-message" style="margin-top:8px;font-size:.9rem"></p>
+    </div>
+  </div>
+  <button class="btn btn-secondary" id="analyze-retry" style="margin-top:16px">← Réessayer</button>
+</div>
+
+<div id="capacity-modal" class="modal-backdrop" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Disponibilités de l'équipe</h3>
+      <button class="modal-close" id="capacity-close" aria-label="Fermer">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="text-tertiary" style="margin-bottom:20px;font-size:.85rem">Ces valeurs seront utilisées dès la prochaine analyse et ajoutées à la base de connaissances.</p>
+      <form id="capacity-form">
+        <div class="field">
+          <label for="cap-charge">Charge globale actuelle</label>
+          <div class="range-row">
+            <input type="range" id="cap-charge" min="0" max="100" value="78">
+            <span class="range-value" id="cap-charge-out">78 %</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="cap-projects-count">Nombre de projets en cours</label>
+          <input type="number" class="input" id="cap-projects-count" min="0" max="999" value="0">
+        </div>
+        <div class="field">
+          <label for="cap-projects-list">Noms des projets en cours (un par ligne)</label>
+          <textarea class="textarea" id="cap-projects-list" style="min-height:90px"></textarea>
+        </div>
+        <div class="field">
+          <label for="cap-min-dispo">Seuil minimum de disponibilité pour démarrer un projet (%)</label>
+          <input type="number" class="input" id="cap-min-dispo" min="0" max="100" value="10">
+          <p class="field-hint">Utilisé par le critère « Disponibilité de l'équipe » de votre politique : en dessous de ce seuil — globalement ou pour un pôle — l'équipe est considérée indisponible.</p>
+        </div>
+        <div class="section-heading"><h3>Disponibilité par pôle</h3></div>
+        <div id="capacity-poles"></div>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:12px">Enregistrer les disponibilités</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block app_extra_scripts %}
+<script>window.WM_STEPS = {{ steps | tojson }};</script>
+<script>window.WM_DOSSIER = {{ dossier | tojson }}; window.WM_ORG = {{ current_organization_id | tojson }};</script>
+<script src="/static/js/dossier.js?v={{ asset_version('js/dossier.js') }}"></script>
+<script src="/static/js/add_pieces.js?v={{ asset_version('js/add_pieces.js') }}"></script>
+<script src="/static/js/dossier_preview.js?v={{ asset_version('js/dossier_preview.js') }}"></script>
+<script src="/static/js/analyze.js?v={{ asset_version('js/analyze.js') }}"></script>
+{% endblock %}

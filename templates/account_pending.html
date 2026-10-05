@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Compte en attente de validation — WinMarket AI{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/landing.css?v={{ asset_version('css/landing.css') }}">{% endblock %}
+
+{% block body %}
+{% include "components/site_header.html" %}
+
+<main id="main-content">
+  <section class="section" style="padding-top: calc(var(--header-height) + var(--space-8))">
+    <div class="container" style="max-width: 560px">
+      <div class="card" style="text-align:center">
+        <div style="font-size:2.4rem;margin-bottom:12px">⏳</div>
+        <h1 style="font-size:1.6rem">En attente d’activation</h1>
+        <p class="text-secondary" style="margin-top:16px;line-height:1.6">
+          Merci pour votre inscription à WinMarket AI.<br>
+          Votre demande a bien été enregistrée. Chaque compte Starter fait l'objet d'une validation par notre équipe.<br>
+          Contactez votre opérateur pour une activation manuelle sans paiement, avec une échéance et un quota explicites. Aucune carte bancaire demandée.
+        </p>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap">
+          <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
+          <form method="post" action="/logout" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit" class="btn btn-ghost">Se déconnecter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% include "components/site_footer.html" %}
+{% endblock %}

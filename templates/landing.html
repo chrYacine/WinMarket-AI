@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+{% block title %}WinMarket AI — Analyse et aide à la décision pour vos appels d'offres{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/landing.css?v={{ asset_version('css/landing.css') }}">{% endblock %}
+
+{% block body %}
+{% include "components/site_header.html" %}
+
+<main id="main-content">
+  <section class="hero">
+    <div class="container">
+      <span class="hero-badge"><span class="dot"></span> AI-Powered Bid Intelligence</span>
+      <h1 class="hero-title">Analysez vos appels d'offres.<br>Décidez plus vite.</h1>
+      <p class="hero-text">
+        WinMarket AI transforme vos dossiers d'appels d'offres en informations exploitables pour accélérer l'analyse,<br>
+        capitaliser sur les connaissances et accompagner la prise de décision de votre équipe avant-vente.
+      </p>
+      <div class="hero-actions">
+        {% if request.state.is_active_starter %}
+        <a class="btn btn-primary" href="/app/analyser">Analyser un appel d'offres →</a>
+        {% else %}
+        <button type="button" class="btn btn-primary" data-access-modal-trigger>Analyser un appel d'offres →</button>
+        {% endif %}
+        <a class="btn btn-secondary" href="#solution">Découvrir la solution</a>
+      </div>
+
+      <div class="hero-visual">
+        <div class="mock-dashboard" aria-hidden="true">
+          <div class="mock-topbar">
+            <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+          </div>
+          <div class="mock-grid">
+            <div class="mock-card">
+              <div class="eyebrow">Score global · démonstratif</div>
+              <div class="mock-score-value">91<span style="font-size:1rem;color:var(--text-tertiary)">/100</span></div>
+              <span class="badge badge-go" style="margin-top:12px">✅ GO</span>
+              <div style="margin-top:22px">
+                <div class="score-head"><span class="score-name">Adéquation expertise</span><span class="score-value">92</span></div>
+                <div class="mock-bar"><span style="width:92%;background:linear-gradient(90deg,#1f9d5c,#2fd47f)"></span></div>
+              </div>
+              <div style="margin-top:14px">
+                <div class="score-head"><span class="score-name">Références similaires</span><span class="score-value">88</span></div>
+                <div class="mock-bar"><span style="width:88%;background:linear-gradient(90deg,#1f9d5c,#2fd47f)"></span></div>
+              </div>
+              <div style="margin-top:14px">
+                <div class="score-head"><span class="score-name">Disponibilité équipe</span><span class="score-value">76</span></div>
+                <div class="mock-bar"><span style="width:76%;background:linear-gradient(90deg,#c99a1e,#f2b73c)"></span></div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="eyebrow">Synthèse IA · démonstratif</div>
+              <p class="text-secondary" style="margin-top:10px;font-size:.85rem;line-height:1.6">
+                Stack technique alignée à 90% avec nos références sectorielles.
+                Trois dossiers comparables livrés dans les 18 derniers mois.
+              </p>
+              <div class="divider" style="margin:16px 0"></div>
+              <div class="eyebrow">Recommandation</div>
+              <p class="text-secondary" style="margin-top:10px;font-size:.85rem">
+                Désigner le chef de projet et lancer la rédaction du mémoire technique.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="value-strip">
+    <div class="container">
+      <span class="value-item">Analyse documentaire</span>
+      <span class="value-item"><span class="plus">+</span> Connaissances internes</span>
+      <span class="value-item"><span class="plus">+</span> Scoring multi-critères</span>
+      <span class="value-item"><span class="plus">+</span> Aide à la décision</span>
+    </div>
+  </section>
+
+  <section class="section" id="comment-ca-marche">
+    <div class="container">
+      <div class="section-intro">
+        <span class="eyebrow">Comment ça marche</span>
+        <h2>Un pipeline structuré, du document brut à la décision</h2>
+        <p>Chaque appel d'offres suit le même parcours d'analyse, de la sécurisation du contenu jusqu'à la génération des livrables de réponse.</p>
+      </div>
+      <div class="workflow-grid">
+        <div class="workflow-step">
+          <span class="workflow-num">01</span>
+          <h3>Importer</h3>
+          <p>Déposez un fichier PDF, DOCX, TXT, ou collez le texte de l'appel d'offres.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-num">02</span>
+          <h3>Sécuriser &amp; préparer</h3>
+          <p>Contrôles de sécurité du contenu, normalisation et déduplication avant toute analyse.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-num">03</span>
+          <h3>Extraire &amp; enrichir</h3>
+          <p>Extraction structurée du contexte AO et enrichissement du profil de l'entreprise cliente.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-num">04</span>
+          <h3>Croiser les références</h3>
+          <p>Recherche et reranking sémantique dans la base de connaissances interne.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-num">05</span>
+          <h3>Scorer &amp; décider</h3>
+          <p>Scoring pondéré selon les critères de votre politique et recommandation GO / GO sous réserve / NO-GO.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-num">06</span>
+          <h3>Restituer</h3>
+          <p>Génération d'un rapport de décision (PDF) et d'un dossier de candidature (DOCX).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="solution">
+    <div class="container">
+      <div class="section-intro">
+        <span class="eyebrow">Aide à la décision</span>
+        <h2>Une recommandation claire, jamais une boîte noire</h2>
+        <p>Chaque analyse se conclut par une décision structurée, appuyée par les scores détaillés, les points forts, les points de vigilance et les risques identifiés.</p>
+      </div>
+      <div class="decision-grid">
+        <div class="decision-card go">
+          <div class="decision-label">GO</div>
+          <p>L'adéquation technique, la disponibilité de l'équipe et le contexte client sont réunis pour répondre avec ambition.</p>
+        </div>
+        <div class="decision-card reserve">
+          <div class="decision-label">GO SOUS RÉSERVE</div>
+          <p>Le dossier est solide mais certains points doivent être levés avant soumission — un plan d'action est proposé.</p>
+        </div>
+        <div class="decision-card nogo">
+          <div class="decision-label">NO-GO</div>
+          <p>Un ou plusieurs critères bloquants sont identifiés — certification manquante, budget insuffisant, charge équipe critique.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="fonctionnalites">
+    <div class="container">
+      <div class="section-intro">
+        <span class="eyebrow">Fonctionnalités</span>
+        <h2>Tout le nécessaire pour instruire un appel d'offres</h2>
+      </div>
+      <div class="features-grid">
+        <div class="card card-hover feature-card">
+          <div class="feature-icon">📄</div>
+          <h3>Analyse documentaire</h3>
+          <p>Extraction structurée du titre, client, budget, délais, technologies, contraintes et certifications obligatoires.</p>
+        </div>
+        <div class="card card-hover feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>Base de connaissances</h3>
+          <p>Recherche TF-IDF et reranking sémantique dans vos références, méthodologies et preuves internes.</p>
+        </div>
+        <div class="card card-hover feature-card">
+          <div class="feature-icon">🏢</div>
+          <h3>Enrichissement client</h3>
+          <p>Profil de l'entreprise cliente : effectif, chiffre d'affaires, secteur, solidité financière.</p>
+        </div>
+        <div class="card card-hover feature-card">
+          <div class="feature-icon">👥</div>
+          <h3>Analyse des capacités</h3>
+          <p>Confrontation de la charge d'équipe actuelle et de la disponibilité par pôle aux exigences du projet.</p>
+        </div>
+        <div class="card card-hover feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Scoring multi-critères</h3>
+          <p>Des critères pondérés que vous définissez — compétences, références, capacité, certifications, faits propres à votre métier.</p>
+        </div>
+        <div class="card card-hover feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>Génération de livrables</h3>
+          <p>Rapport de décision PDF et dossier de candidature DOCX générés automatiquement, prêts à télécharger.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <span class="eyebrow" style="color:var(--accent-cyan)">Prêt à démarrer</span>
+    <h2>Analysez votre premier appel d'offres en quelques minutes</h2>
+    <p>Importez un document ou testez avec l'un des appels d'offres d'exemple fournis.</p>
+    {% if request.state.is_active_starter %}
+    <a class="btn btn-primary" href="/app/analyser">Analyser un appel d'offres →</a>
+    {% else %}
+    <button type="button" class="btn btn-primary" data-access-modal-trigger>Analyser un appel d'offres →</button>
+    {% endif %}
+  </div>
+</main>
+
+{% include "components/site_footer.html" %}
+{% endblock %}

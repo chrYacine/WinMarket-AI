@@ -1,0 +1,196 @@
+{% extends "app_shell.html" %}
+{% block title %}Paramètres de scoring — WinMarket AI{% endblock %}
+
+{% block app_content %}
+{% set state_labels = {'a_configurer': 'À configurer', 'brouillon': 'Brouillon enregistré', 'analyses': 'Politique activée'} %}
+{% set state_class = {'a_configurer': 'nogo', 'brouillon': 'reserve', 'analyses': 'go'} %}
+
+<div class="page-title">Paramètres de scoring</div>
+<p class="page-subtitle">
+  Votre profil, vos faits métier et votre politique de scoring sont privés à votre compte et à
+  l'organisation sélectionnée — configurez-les avant de lancer une analyse. Une modification de
+  brouillon ne change jamais la politique active tant que vous n'avez pas explicitement activé.
+</p>
+
+<div class="card" style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+  <div>
+    <div class="text-tertiary" style="font-size:.8rem">État actuel</div>
+    <span class="badge badge-{{ state_class.get(state, 'nogo') }}" id="state-badge" style="margin-top:6px">{{ state_labels.get(state, state) }}</span>
+    <div class="text-tertiary" id="active-version-label" style="font-size:.8rem;margin-top:6px">
+      {% if active_policy %}Version active : v{{ active_policy.version }}{% else %}Aucune version active{% endif %}
+    </div>
+    <div class="text-tertiary" id="active-origin-label" style="font-size:.8rem;margin-top:2px">
+      {% if active_policy %}{{ active_policy.origin_label }} — schéma de critères v{{ active_policy.criteria_version }}{% endif %}
+    </div>
+  </div>
+  {% if not can_configure %}
+  <div class="callout callout-warning" style="margin:0;font-size:.82rem">Votre rôle ne permet pas de modifier cette configuration.</div>
+  {% endif %}
+</div>
+
+<div id="save-feedback" class="callout callout-success" style="margin-bottom:16px" role="status" hidden></div>
+<div id="save-error" class="callout callout-danger" style="margin-bottom:16px" role="alert" hidden></div>
+<div id="base-notice" class="callout callout-info" style="margin-bottom:16px;font-size:.85rem" hidden>
+  Aucun brouillon en cours : le formulaire part de votre version active. Enregistrer crée un nouveau brouillon ;
+  la version active n'est modifiée qu'à l'activation.
+</div>
+<div id="dirty-banner" class="callout callout-warning" style="margin-bottom:16px;font-size:.85rem" hidden>
+  Modifications non enregistrées — la validation et la simulation portent sur le brouillon enregistré.
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="section-heading"><h3>Profil fournisseur</h3></div>
+  <p class="text-tertiary" style="font-size:.82rem;margin-bottom:16px">
+    Utilisé uniquement pour vos propres analyses — jamais partagé avec un autre compte ou organisation.
+  </p>
+  <form id="profile-form">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="field">
+        <label for="prof-raison-sociale">Raison sociale</label>
+        <input class="input" type="text" id="prof-raison-sociale" value="{{ profile.raison_sociale or '' }}" {{ '' if can_configure else 'disabled' }}>
+      </div>
+      <div class="field">
+        <label for="prof-effectif">Effectif</label>
+        <input class="input" type="text" id="prof-effectif" placeholder="ex. 10-50" value="{{ profile.effectif or '' }}" {{ '' if can_configure else 'disabled' }}>
+      </div>
+    </div>
+    <div class="field">
+      <label for="prof-competences">Compétences maîtrisées (une par ligne)</label>
+      <textarea class="textarea" id="prof-competences" style="min-height:80px" {{ '' if can_configure else 'disabled' }}>{{ (profile.competences or []) | join('\n') }}</textarea>
+    </div>
+    <div class="field">
+      <label><input type="checkbox" id="prof-external-enrichment" {{ 'checked' if profile.external_enrichment_enabled else '' }} {{ '' if can_configure else 'disabled' }}> Activer l'enrichissement externe (Pappers) pour les analyses de ce compte</label>
+    </div>
+
+    <div class="section-heading" style="margin-top:8px"><h3>Certifications</h3></div>
+    <div id="certifications-list"></div>
+    <button type="button" class="btn btn-secondary" id="add-certification" style="margin-top:8px" {{ 'disabled' if not can_configure else '' }}>+ Ajouter une certification</button>
+    <p class="field-hint" style="margin-top:6px">La référence de preuve (facultative) doit être l'identifiant d'un document déjà déposé dans votre <a href="/app/base-connaissances">base de connaissances</a>.</p>
+
+    <div class="section-heading" style="margin-top:20px"><h3>Faits métier de votre activité</h3></div>
+    <p class="text-tertiary" style="font-size:.82rem;margin-bottom:12px">
+      Déclarez ce que vous savez faire, avec vos propres mots et unités (zone d'intervention, fréquence,
+      matériel, capacité…). Rien n'est prérempli. Un fait ne sert au calcul que s'il est utilisé par un
+      critère ci-dessous ; l'identifiant reste stable une fois enregistré.
+    </p>
+    <div id="facts-list"></div>
+    <button type="button" class="btn btn-secondary" id="add-fact" style="margin-top:8px" {{ 'disabled' if not can_configure else '' }}>+ Ajouter un fait métier</button>
+
+    <button type="submit" class="btn btn-primary btn-block" id="save-profile" style="margin-top:20px" {{ 'disabled' if not can_configure else '' }}>Enregistrer le profil et les faits métier</button>
+  </form>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="section-heading"><h3>Politique de scoring — brouillon</h3></div>
+  <p class="text-tertiary" style="font-size:.82rem;margin-bottom:16px">
+    Un brouillon peut être incomplet ou invalide — seules la validation et l'activation ci-dessous
+    l'exigent complet. Modifier ce brouillon ne change jamais la politique active.
+  </p>
+  <form id="policy-form">
+    <div id="origin-notice" class="callout callout-info" style="font-size:.85rem;margin-bottom:12px" hidden></div>
+
+    <div class="section-heading"><h3>Critères de la politique</h3></div>
+    <p class="text-tertiary" style="font-size:.82rem;margin-bottom:12px">
+      Une nouvelle politique commence <strong>vide</strong> : aucun critère, aucune note et aucun seuil n'est imposé.
+      Ajoutez les critères qui décrivent votre activité ; chacun indique la donnée qu'il compare, son barème, son poids,
+      s'il est bloquant et ce qu'il faut faire quand la donnée manque. Le calcul est toujours fait par le serveur.
+    </p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:12px">
+      <label style="display:flex;flex-direction:column;gap:2px;font-size:.78rem">Ajouter un critère
+        <select class="select" id="new-criterion-evaluator" {{ '' if can_configure else 'disabled' }}></select></label>
+      <button type="button" class="btn btn-secondary" id="add-criterion" {{ 'disabled' if not can_configure else '' }}>+ Ajouter</button>
+      <label style="display:flex;flex-direction:column;gap:2px;font-size:.78rem">Brouillon proposé (facultatif)
+        <select class="select" id="template-select" {{ '' if can_configure else 'disabled' }}></select></label>
+      <button type="button" class="btn btn-secondary" id="load-template" {{ 'disabled' if not can_configure else '' }}>Charger dans le formulaire</button>
+    </div>
+    <p class="field-hint" id="template-hint" style="margin-bottom:8px" hidden></p>
+    <div id="criteria-list"></div>
+    <details style="margin-top:8px"><summary class="text-tertiary" style="font-size:.82rem;cursor:pointer">Ce que le calcul ne sait pas (encore) faire</summary>
+      <ul id="unavailable-list" class="text-tertiary" style="font-size:.8rem;margin:6px 0 0 18px"></ul></details>
+
+    <div class="card card-tight" id="weight-total-card" style="margin-top:16px">
+      <div class="text-tertiary" style="font-size:.8rem">Total des poids des critères actifs — doit valoir exactement 100 (aucune normalisation automatique)</div>
+      <div class="font-mono" id="weight-total" style="font-size:1.2rem;font-weight:700">0 / 100</div>
+      <div class="text-tertiary" id="weight-total-hint" style="font-size:.8rem"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+      <div class="field">
+        <label for="pol-threshold-go">Seuil GO (score minimum)</label>
+        <input class="input" type="number" step="any" id="pol-threshold-go" {{ '' if can_configure else 'disabled' }}>
+      </div>
+      <div class="field">
+        <label for="pol-threshold-reserve">Seuil GO sous réserve (score minimum)</label>
+        <input class="input" type="number" step="any" id="pol-threshold-reserve" {{ '' if can_configure else 'disabled' }}>
+      </div>
+    </div>
+
+    <div class="section-heading" style="margin-top:8px"><h3>Critère non applicable pendant une analyse</h3></div>
+    <p class="text-tertiary" style="font-size:.82rem;margin-bottom:8px">
+      Un critère déclaré « non applicable » n'est ni satisfait ni échoué, et son poids n'est jamais redistribué automatiquement.
+      Par défaut, l'analyse est alors <strong>incomplète</strong>. Vous pouvez valider explicitement une règle : recalculer sur les seuls critères applicables.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="field"><label for="set-na-rule">Règle de pondération</label>
+        <select class="select" id="set-na-rule" {{ '' if can_configure else 'disabled' }}>
+          <option value="incomplete">Analyse incomplète (aucune redistribution)</option>
+          <option value="renormalize">Recalculer sur les critères applicables</option></select></div>
+      <div class="field"><label style="margin-top:22px"><input type="checkbox" id="set-na-confirm" {{ '' if can_configure else 'disabled' }}> Je confirme cette règle de pondération</label></div>
+      <div class="field"><label for="set-strengths">Afficher comme « point fort » un critère dont la note est ≥ (facultatif)</label>
+        <input class="input" type="number" step="any" id="set-strengths" {{ '' if can_configure else 'disabled' }}></div>
+      <div class="field"><label for="set-weaknesses">Afficher comme « point de vigilance » un critère dont la note est &lt; (facultatif)</label>
+        <input class="input" type="number" step="any" id="set-weaknesses" {{ '' if can_configure else 'disabled' }}></div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+      <button type="submit" class="btn btn-primary" id="save-draft" {{ 'disabled' if not can_configure else '' }}>Enregistrer le brouillon</button>
+      <button type="button" class="btn btn-secondary" id="validate-draft" {{ 'disabled' if not can_configure else '' }}>Valider le brouillon</button>
+      <button type="button" class="btn btn-secondary" id="open-simulation" {{ 'disabled' if not can_configure else '' }}>Simuler</button>
+      <button type="button" class="btn btn-elevated" id="activate-draft" {{ 'disabled' if not can_configure else '' }}>Activer cette politique</button>
+    </div>
+  </form>
+
+  <ul id="save-status" class="text-tertiary" style="margin-top:12px;font-size:.85rem;list-style:none;padding:0" aria-live="polite"></ul>
+
+  <div id="activation-confirm" class="callout callout-warning" style="margin-top:16px" hidden>
+    <div id="activation-confirm-text" style="margin-bottom:10px"></div>
+    <button type="button" class="btn btn-elevated" id="activation-confirm-yes">Confirmer l'activation</button>
+    <button type="button" class="btn btn-secondary" id="activation-confirm-no">Annuler</button>
+  </div>
+
+  <div id="validation-result" style="margin-top:16px" aria-live="polite"></div>
+</div>
+
+<div class="card" id="simulation-card" style="margin-bottom:20px" hidden>
+  <div class="section-heading"><h3>Simulation sur le brouillon enregistré</h3></div>
+  <div class="callout callout-info" style="font-size:.82rem">
+    SIMULATION — ce n'est pas une analyse : le brouillon n'est pas activé, rien n'est ajouté à l'historique, aucun
+    fournisseur externe n'est appelé (extraction locale uniquement, elle peut donc rester incomplète).
+  </div>
+  <div class="field">
+    <label for="sim-text">Texte de l'appel d'offres à simuler</label>
+    <textarea class="textarea" id="sim-text" style="min-height:120px" {{ '' if can_configure else 'disabled' }}></textarea>
+  </div>
+  <button type="button" class="btn btn-primary" id="run-simulation" {{ 'disabled' if not can_configure else '' }}>Lancer la simulation</button>
+  <div id="simulation-result" style="margin-top:16px" aria-live="polite"></div>
+</div>
+
+<div class="card" id="active-policy-card" {{ '' if active_policy else 'hidden' }}>
+  <div class="section-heading"><h3>Politique actuellement activée</h3></div>
+  <div id="active-policy-summary" class="text-tertiary" style="font-size:.85rem"></div>
+</div>
+{% endblock %}
+
+{% block app_extra_scripts %}
+<script>
+  window.WM_ORGANIZATION_ID = {{ current_organization_id | tojson }};
+  window.WM_CATALOGUE = {{ business_facts_catalogue | tojson }};
+  window.WM_CRITERIA_CATALOGUE = {{ criteria_catalogue | tojson }};
+  window.WM_CRITERIA_TEMPLATES = {{ criteria_templates | tojson }};
+  window.WM_PROFILE = {{ profile | tojson }};
+  window.WM_ACTIVE_POLICY = {{ active_policy | tojson }};
+  window.WM_DRAFT_POLICY = {{ draft_policy | tojson }};
+  window.WM_DRAFT_VALIDATION = {{ draft_validation | tojson }};
+</script>
+<script src="/static/js/parametres.js?v={{ asset_version('js/parametres.js') }}"></script>
+{% endblock %}

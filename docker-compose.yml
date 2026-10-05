@@ -1,0 +1,16 @@
+﻿# Optional Linux/Docker procedure; never binds the protected host port 5432.
+# Set a private WM56_POSTGRES_PASSWORD outside Git before using this file.
+name: wm56-isolated
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: wm56_app
+      POSTGRES_PASSWORD: ${WM56_POSTGRES_PASSWORD:?Set a private password outside Git}
+      POSTGRES_DB: wm56_app_db
+    ports:
+      - "127.0.0.1:5546:5432"
+    volumes:
+      - wm56_pgdata:/var/lib/postgresql/data
+volumes:
+  wm56_pgdata:

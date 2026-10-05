@@ -1,0 +1,72 @@
+{% extends "app_shell.html" %}
+{% block title %}Analyse en cours — WinMarket AI{% endblock %}
+
+{% block app_content %}
+<div class="page-title">Analyse en cours</div>
+<p class="page-subtitle">Cette page se mettra à jour automatiquement à la fin du traitement.</p>
+
+<div class="card progress-panel" style="margin-top:20px">
+  <div class="spinner"></div>
+  <div class="progress-message" id="progress-message">{{ job.message }}</div>
+  <div class="step-progress" id="progress-steps"></div>
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-bar-fill" style="width:4%"></div></div>
+</div>
+{% endblock %}
+
+{% block app_extra_scripts %}
+<script>
+(function () {
+  const STEPS = {{ steps | tojson }};
+  const jobId = {{ job.id | tojson }};
+  const stepsEl = document.getElementById("progress-steps");
+  const msgEl = document.getElementById("progress-message");
+  const barEl = document.getElementById("progress-bar-fill");
+
+  function render(idx) {
+    stepsEl.innerHTML = STEPS.map((label, i) => {
+      const cls = i < idx ? "done" : i === idx ? "active" : "";
+      return `<div class="step-pill ${cls}">${i < idx ? "✓ " : ""}${label}</div>`;
+    }).join("");
+  }
+
+  const MAX_POLL_FAILURES = 15; // ~30s of transient network errors before giving up
+
+  async function poll(failureCount = 0) {
+    let res;
+    try {
+      res = await fetch(`/api/analyze/${jobId}/status`);
+    } catch {
+      if (failureCount >= MAX_POLL_FAILURES) {
+        msgEl.textContent = "Impossible de contacter le serveur WinMarket AI.";
+        return;
+      }
+      setTimeout(() => poll(failureCount + 1), 2000);
+      return;
+    }
+
+    if (!res.ok) {
+      // Job unknown to the server (e.g. after a restart) — a full reload
+      // re-renders the server-side error page instead of polling forever.
+      window.location.reload();
+      return;
+    }
+
+    const data = await res.json();
+    render(data.step_index);
+    msgEl.textContent = data.message;
+    barEl.style.width = `${((data.step_index + 1) / data.total_steps) * 100}%`;
+    if (data.status === "done" && data.redirect_url) {
+      window.location.href = data.redirect_url;
+      return;
+    }
+    if (data.status === "error") {
+      window.location.reload();
+      return;
+    }
+    setTimeout(() => poll(), 1100);
+  }
+  render({{ job.step_index }});
+  poll();
+})();
+</script>
+{% endblock %}

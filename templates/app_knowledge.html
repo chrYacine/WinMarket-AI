@@ -1,0 +1,93 @@
+{% extends "app_shell.html" %}
+{% block title %}Base de connaissances — WinMarket AI{% endblock %}
+
+{% block app_content %}
+{# Lot 45: the whole page is driven by static/js/knowledge.js from the JSON routes
+   (/api/knowledge/documents*, /api/knowledge, /api/knowledge/search). The
+   server only supplies what the page may OFFER (write permission, limits) as
+   data attributes; every route re-verifies role, scope and CSRF itself. No
+   document, example or figure is ever pre-filled here. #}
+<div id="knowledge-root"
+     data-org="{{ current_organization_id }}"
+     data-can-write="{{ '1' if can_write else '0' }}"
+     data-max-mb="{{ knowledge_limits.max_file_mb }}"
+     data-max-docs="{{ knowledge_limits.max_documents }}"
+     data-formats="{{ knowledge_limits.formats | join(',') }}">
+  <div class="page-title">Base de connaissances</div>
+  <p class="page-subtitle">Vos documents de référence, privés à votre compte et à l'organisation sélectionnée.</p>
+  <p class="text-secondary" style="font-size:.85rem;margin:8px 0 0" id="knowledge-scope-note">
+    Ils servent uniquement de sources consultées lors de vos analyses : les ajouter, les remplacer ou les supprimer ne modifie
+    ni vos faits métier, ni vos certifications, ni votre politique de scoring, ni les analyses déjà réalisées ; le contenu
+    d'un document n'est jamais une instruction donnée au système.
+  </p>
+
+  <div class="kpi-grid" style="margin-top:20px">
+    <div class="kpi-tile">
+      <div class="kpi-label">Documents disponibles</div>
+      <div class="kpi-value" id="knowledge-total-docs">{{ knowledge.total_documents }}</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Taille des versions actives</div>
+      <div class="kpi-value" id="knowledge-total-kb">{{ '< 1 Ko' if (knowledge.total_kb == 0 and knowledge.total_documents > 0) else (knowledge.total_kb ~ ' Ko') }}</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Dernière modification</div>
+      <div class="kpi-value" style="font-size:1rem" id="knowledge-last-update">—</div>
+    </div>
+  </div>
+
+  <div id="knowledge-feedback" class="callout callout-success" style="margin-top:20px" role="status" hidden></div>
+  <div id="knowledge-warning" class="callout callout-warning" style="margin-top:20px" role="alert" hidden></div>
+  <div id="knowledge-error" class="callout callout-danger" style="margin-top:20px" role="alert" hidden></div>
+
+  {% if can_write %}
+  <div class="card" style="margin-top:24px" id="knowledge-upload-card">
+    <div class="section-heading"><h3>Ajouter un document</h3></div>
+    <div class="field">
+      <label for="knowledge-file">Fichier(s) de référence</label>
+      <input type="file" class="input" id="knowledge-file" accept="{{ knowledge_limits.formats | join(',') }}" multiple>
+      <div class="field-hint">
+        Formats acceptés : {{ knowledge_limits.formats | join(', ') }} — {{ knowledge_limits.max_file_mb }} Mio maximum par fichier,
+        {{ knowledge_limits.max_documents }} documents au maximum. Les PDF doivent contenir du texte : aucune reconnaissance
+        de caractères (OCR) n'est disponible pour un scan. Plusieurs fichiers peuvent être sélectionnés à la fois :
+        chacun est envoyé l'un après l'autre par l'ajout existant, avec son propre résultat (succès ou échec).
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary" id="knowledge-upload">Ajouter le document</button>
+    <span id="knowledge-upload-status" class="text-tertiary" style="margin-left:12px;font-size:.85rem" role="status" aria-live="polite"></span>
+  </div>
+  {% else %}
+  <div class="callout callout-warning" style="margin-top:24px;font-size:.85rem" id="knowledge-readonly">
+    Votre rôle est en lecture seule sur cette organisation : vous pouvez consulter, rechercher et télécharger vos
+    documents, mais pas en ajouter, les remplacer ni les supprimer.
+  </div>
+  {% endif %}
+
+  <div class="section-heading" style="margin-top:32px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <h3>Mes documents</h3>
+    {% if can_write %}
+    <button type="button" class="btn btn-secondary btn-sm" id="knowledge-reload" title="Reconstruit l'index de recherche de votre compte uniquement">Actualiser l'index de recherche</button>
+    {% endif %}
+  </div>
+  <div id="knowledge-list" aria-live="polite">
+    <p class="text-tertiary">Chargement de vos documents…</p>
+  </div>
+
+  <div class="card" style="margin-top:32px">
+    <div class="section-heading"><h3>Rechercher dans mes documents</h3></div>
+    <p class="text-tertiary" style="font-size:.85rem;margin-top:0">
+      La recherche porte uniquement sur la version active de vos propres documents ; chaque passage indique sa source.
+    </p>
+    <div class="field" style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="search" class="input" id="knowledge-search" autocomplete="off" style="flex:1 1 220px;min-width:0"
+             placeholder="Un terme ou une phrase présents dans vos documents" aria-label="Rechercher dans mes documents">
+      <button type="button" class="btn btn-secondary" id="knowledge-search-btn">Rechercher</button>
+    </div>
+    <div id="knowledge-search-results" aria-live="polite"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block app_extra_scripts %}
+<script src="/static/js/knowledge.js?v={{ asset_version('js/knowledge.js') }}"></script>
+{% endblock %}

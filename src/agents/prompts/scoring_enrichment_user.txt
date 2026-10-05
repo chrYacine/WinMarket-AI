@@ -1,0 +1,61 @@
+Tu dois enrichir l'analyse de scoring d'un appel d'offres pour le prestataire qui y répond. Voici le contexte complet :
+
+═══════════════════════════════════════════════
+INFORMATIONS SUR L'APPEL D'OFFRES
+═══════════════════════════════════════════════
+Titre          : {{TITRE}}
+Client         : {{CLIENT}}
+Secteur        : {{SECTEUR}}
+Budget estimé  : {{BUDGET}}
+Durée          : {{DUREE}}
+Technologies   : {{TECHNOLOGIES}}
+Compétences    : {{COMPETENCES}}
+Livrables      : {{LIVRABLES}}
+Contraintes    : {{CONTRAINTES}}
+Certif. oblig. : {{CERTIFICATIONS}}
+
+═══════════════════════════════════════════════
+SCORES CALCULÉS PAR CRITÈRE
+═══════════════════════════════════════════════
+{{CRITERES_TEXT}}
+
+DÉCISION ALGORITHMIQUE : {{DECISION}}
+SCORE GLOBAL           : {{SCORE_GLOBAL}}/100
+{{BLOCKERS_TEXT}}
+
+═══════════════════════════════════════════════
+TA MISSION
+═══════════════════════════════════════════════
+Enrichis cette analyse en produisant un JSON avec les champs suivants :
+
+**"justifications"** — Objet clé/valeur où chaque clé est le nom exact d'un critère listé ci-dessus. Un critère « NON ÉVALUÉ » ou « NON APPLICABLE » n'a pas de note : n'en invente pas, explique seulement ce qui manque. Une note marquée « HYPOTHÈSE DE LA POLITIQUE » n'est pas un fait établi : dis-le.
+Chaque justification doit :
+  • Être spécifique à CET appel d'offres (citer le client, le secteur, les technologies, le budget)
+  • Expliquer pourquoi le score est ce qu'il est avec des arguments factuels
+  • Faire 1 à 2 phrases denses, pas des généralités
+  • ÉVITER : les formules génériques ("Le prestataire maîtrise...", "Ce projet nécessite..."), et toute affirmation sur le prestataire qui ne figure pas dans le dossier ci-dessus
+  • PRÉFÉRER : reprendre les valeurs du dossier ci-dessus (budget, durée, technologies, état de chaque critère) telles qu'elles sont, sans en inventer
+
+**"forces"** — Liste de 3 à 5 points forts, chacun :
+  • Directement lié à un élément factuel de l'AO (technologie, secteur, budget, délai, certification)
+  • Formulé comme un argument commercial percutant, pas comme une description
+  • Exemple à éviter : "Bonne adéquation technologique"
+  • À privilégier : un argument appuyé sur une valeur du dossier (technologie demandée, budget, exigence), jamais sur une réalisation ou une certification qui n'y figure pas
+
+**"faiblesses"** — Liste de 2 à 4 points faibles, chacun :
+  • Honnête et factuel (pas défensif, pas minimisé)
+  • Incluant si possible une piste de mitigation en une phrase
+  • ÉVITER les faiblesses fictives si le score est fort
+
+**"recommandations"** — Liste de 3 actions concrètes et immédiatement actionnables par l'équipe qui prépare la réponse :
+  • Formulées à l'impératif
+  • Chiffrées ou datées UNIQUEMENT si le dossier fournit la valeur ou la date (jamais de délai inventé)
+  • Liées aux spécificités de CET appel (pas des conseils génériques)
+  • Exemple de forme : "Clarifier avec {{CLIENT}} le point X de l'appel d'offres avant la date limite indiquée dans le dossier"
+
+**"risques"** — Liste de 2 à 3 risques projet identifiés :
+  • Risques réels et spécifiques (pas "risque de dépassement de budget" sans justification)
+  • Avec probabilité implicite (élevée/modérée/faible) et impact potentiel
+  • Basés sur les contraintes, délais, certifications ou technologies de l'AO
+
+Réponds UNIQUEMENT en JSON valide, sans texte avant ni après.

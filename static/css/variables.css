@@ -1,0 +1,106 @@
+/* ==========================================================================
+   WinMarket AI — Design tokens
+   Light, premium B2B SaaS palette on a white background. Electric blue
+   primary, teal/cyan used sparingly as a highlight accent only.
+   ========================================================================== */
+
+:root {
+  /* ── Surfaces ── */
+  --background: #ffffff;
+  --background-soft: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #f3f5fa;
+  --surface-hover: #eaedf6;
+  --surface-glass: rgba(255, 255, 255, 0.78);
+
+  --border: #e6e9f2;
+  --border-soft: #eef0f6;
+  --border-strong: #d6dae8;
+
+  /* ── Text ── */
+  --text-primary: #10131f;
+  --text-secondary: #4c5468;
+  --text-tertiary: #7c8298;
+  --text-inverse: #ffffff;
+
+  /* ── Brand ── */
+  --primary: #3b66f5;
+  --primary-strong: #2748d1;
+  --primary-soft: rgba(59, 102, 245, 0.08);
+  --primary-border: rgba(59, 102, 245, 0.28);
+  --accent-cyan: #0c8599;
+  --accent-cyan-soft: rgba(12, 133, 153, 0.08);
+
+  /* ── Status ── */
+  --go: #15803d;
+  --go-soft: #ecfdf3;
+  --go-border: #86efac;
+  --reserve: #b45309;
+  --reserve-soft: #fffbeb;
+  --reserve-border: #fcd34d;
+  --nogo: #dc2626;
+  --nogo-soft: #fef2f2;
+  --nogo-border: #fca5a5;
+
+  /* ── Gradients ── */
+  --gradient-hero: radial-gradient(60% 55% at 20% 0%, rgba(59, 102, 245, 0.10) 0%, rgba(255, 255, 255, 0) 60%),
+                   radial-gradient(45% 40% at 90% 10%, rgba(12, 133, 153, 0.08) 0%, rgba(255, 255, 255, 0) 60%);
+  --gradient-primary: linear-gradient(135deg, #3b66f5 0%, #2748d1 100%);
+  --gradient-border: linear-gradient(135deg, rgba(59, 102, 245, 0.4), rgba(12, 133, 153, 0.15));
+
+  /* ── Typography ── */
+  --font-sans: "Inter", "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+
+  --fs-display: clamp(2.6rem, 2rem + 2.6vw, 4.4rem);
+  --fs-h1: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+  --fs-h2: clamp(1.5rem, 1.3rem + 0.8vw, 2.1rem);
+  --fs-h3: clamp(1.15rem, 1.05rem + 0.4vw, 1.4rem);
+  --fs-body-lg: 1.125rem;
+  --fs-body: 0.975rem;
+  --fs-sm: 0.85rem;
+  --fs-xs: 0.75rem;
+
+  /* ── Radius ── */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  /* ── Spacing ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 2px rgba(16, 19, 31, 0.06);
+  --shadow-md: 0 8px 24px rgba(16, 19, 31, 0.08);
+  --shadow-lg: 0 24px 64px rgba(16, 19, 31, 0.12);
+  --shadow-glow: 0 0 0 1px rgba(59, 102, 245, 0.18), 0 12px 32px rgba(59, 102, 245, 0.16);
+
+  /* ── Motion ── */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 150ms var(--ease);
+  --transition: 220ms var(--ease);
+  --transition-slow: 420ms var(--ease);
+
+  --container-max: 1240px;
+  --header-height: 76px;
+  color-scheme: light;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

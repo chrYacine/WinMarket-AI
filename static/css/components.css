@@ -1,0 +1,404 @@
+/* ==========================================================================
+   WinMarket AI — Component library
+   ========================================================================== */
+
+/* ── Brand (logo mark + wordmark) — shared by the landing header and the
+   app sidebar so the identity is identical everywhere ── */
+.brand { display: flex; align-items: center; gap: var(--space-2); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; color: var(--text-primary); }
+.brand-mark {
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  background: var(--gradient-primary);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 0.95rem;
+  box-shadow: var(--shadow-glow);
+  flex-shrink: 0;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.85rem 1.4rem;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+.btn-primary:hover { box-shadow: 0 0 0 1px rgba(59,102,245,.4), 0 16px 48px rgba(59,102,245,.22); }
+
+.btn-secondary {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.btn-secondary:hover { background: var(--surface-hover); border-color: var(--primary-border); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { color: var(--text-primary); background: var(--surface); }
+
+.btn-block { width: 100%; }
+.btn-sm { padding: 0.55rem 1rem; font-size: var(--fs-xs); }
+
+/* Elevated action button — white card look with an icon chip, used for
+   secondary but important actions like "Modifier les disponibilités" */
+.btn-elevated {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  padding: 0.6rem 1.1rem 0.6rem 0.6rem;
+}
+.btn-elevated:hover {
+  border-color: var(--primary-border);
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.btn-elevated .btn-icon-chip {
+  width: 26px; height: 26px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 0.9rem;
+  transition: background var(--transition-fast);
+}
+.btn-elevated:hover .btn-icon-chip { background: var(--surface); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+.card-tight { padding: var(--space-5); }
+.card-hover { transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition); }
+.card-hover:hover { border-color: var(--border-strong); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+.surface-2 { background: var(--surface-2); }
+
+/* ── Badges (decision) ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.badge-go { background: var(--go-soft); color: var(--go); border-color: var(--go-border); }
+.badge-reserve { background: var(--reserve-soft); color: var(--reserve); border-color: var(--reserve-border); }
+.badge-nogo { background: var(--nogo-soft); color: var(--nogo); border-color: var(--nogo-border); }
+/* B27-T1: INCOMPLET (business-rules-missing, src/agents/scoring_engine.py)
+   is deliberately neutral — never the "go" green (it is not a favorable
+   result) and never the "nogo" red (it is not a rejection either, just an
+   unfinished configuration). */
+.badge-incomplete { background: var(--surface-2); color: var(--text-secondary); border-color: var(--border-strong); }
+
+.badge-outline {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+
+/* ── Chips / tags ── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--primary-strong);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+}
+
+/* Lot 50 — a dossier piece excluded at admission (§3): visible without a color-only cue (text already says
+   "Exclue"), dimmed so an admitted piece stays the visual default. */
+.dossier-piece-excluded {
+  opacity: 0.65;
+}
+.dossier-piece-excluded td {
+  font-style: italic;
+}
+
+/* ── KPI tiles ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+}
+.kpi-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5);
+}
+.kpi-tile.go { border-left-color: var(--go); }
+.kpi-tile.reserve { border-left-color: var(--reserve); }
+.kpi-tile.nogo { border-left-color: var(--nogo); }
+.kpi-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-1);
+}
+.kpi-value { font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; line-height: 1; }
+.kpi-sub { font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: var(--space-1); }
+
+/* ── Section heading ── */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+.section-heading h3 { text-transform: uppercase; letter-spacing: 0.08em; font-size: var(--fs-sm); color: var(--text-secondary); }
+
+/* ── Score bars ── */
+.score-row + .score-row { margin-top: var(--space-4); }
+.score-head { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--fs-sm); margin-bottom: var(--space-2); }
+.score-name { color: var(--text-primary); font-weight: 500; }
+.score-weight { color: var(--text-tertiary); font-size: var(--fs-xs); margin-left: var(--space-1); }
+.score-value { font-family: var(--font-mono); font-weight: 700; }
+.score-track { position: relative; height: 8px; background: var(--surface-2); border-radius: var(--radius-full); overflow: hidden; }
+.score-fill { height: 100%; border-radius: var(--radius-full); transition: width var(--transition-slow); }
+.score-fill.high { background: linear-gradient(90deg, #1f9d5c, var(--go)); }
+.score-fill.mid { background: linear-gradient(90deg, #c99a1e, var(--reserve)); }
+.score-fill.low { background: linear-gradient(90deg, #c23f4f, var(--nogo)); }
+.score-justification { margin-top: var(--space-2); font-size: var(--fs-xs); color: var(--text-tertiary); }
+
+/* ── Alert / callout blocks ── */
+.callout { border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); border-left: 3px solid; font-size: var(--fs-sm); line-height: 1.6; }
+.callout + .callout { margin-top: var(--space-3); }
+.callout-danger { background: var(--nogo-soft); border-color: var(--nogo); color: #7f1d1d; }
+.callout-warning { background: var(--reserve-soft); border-color: var(--reserve); color: #78350f; }
+.callout-success { background: var(--go-soft); border-color: var(--go); color: #065f46; }
+.callout-info { background: var(--primary-soft); border-color: var(--primary); color: #1e3a8a; }
+
+/* ── Step progress ── */
+.step-progress { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.step-pill {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-tertiary);
+  font-size: var(--fs-xs);
+  font-family: var(--font-mono);
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+}
+.step-pill.done { background: var(--go-soft); color: var(--go); border-color: var(--go-border); }
+.step-pill.active { background: var(--primary-soft); color: var(--primary-strong); border-color: var(--primary-border); }
+
+/* ── Dropzone ── */
+.dropzone {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+  background: var(--surface);
+  transition: border-color var(--transition), background var(--transition);
+  cursor: pointer;
+}
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.dropzone-icon { font-size: 2.4rem; margin-bottom: var(--space-3); }
+.dropzone-formats { margin-top: var(--space-4); display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap; }
+
+/* ── Tabs ── */
+.tabs { display: flex; gap: var(--space-2); border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tab-btn {
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--primary-strong); border-color: var(--primary-strong); }
+.tab-panel { display: none; padding-top: var(--space-6); }
+.tab-panel.active { display: block; animation: fadeIn var(--transition); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Form elements ── */
+.field { margin-bottom: var(--space-4); }
+.field label { display: block; font-size: var(--fs-sm); font-weight: 600; margin-bottom: var(--space-2); color: var(--text-secondary); }
+.field-hint { font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: var(--space-1); }
+
+.input, .textarea, .select {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.9rem;
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+/* Lot 47: keep a REAL focus indicator (the border colour alone was the only cue) */
+.input:focus, .textarea:focus, .select:focus { border-color: var(--primary); background: var(--surface); outline: 2px solid var(--primary-strong); outline-offset: 1px; }
+.textarea { resize: vertical; min-height: 160px; line-height: 1.6; }
+
+.radio-group { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.radio-pill {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+.radio-pill input { display: none; }
+.radio-pill.active { background: var(--primary-soft); border-color: var(--primary-border); color: var(--primary-strong); }
+
+/* ── Option cards (bigger selectable choice, with icon) ── */
+.option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-3); }
+.option-card {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+.option-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.option-card input { display: none; }
+.option-card .option-icon {
+  width: 26px; height: 26px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  transition: background var(--transition-fast);
+}
+.option-card .option-label { font-size: var(--fs-sm); font-weight: 600; color: var(--text-primary); }
+.option-card.active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  box-shadow: 0 0 0 1px var(--primary-border);
+}
+.option-card.active .option-icon { background: var(--surface); box-shadow: var(--shadow-sm); }
+
+.range-row { display: flex; align-items: center; gap: var(--space-4); }
+.range-row input[type="range"] { flex: 1; accent-color: var(--primary); }
+.range-value { font-family: var(--font-mono); font-weight: 700; min-width: 3.4rem; text-align: right; }
+
+/* ── Table ── */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-md); }
+table.data-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.data-table th {
+  text-align: left; padding: var(--space-3) var(--space-4);
+  background: var(--surface-2); color: var(--text-tertiary);
+  font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* ── List row (history) ── */
+.list-row {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+.list-row + .list-row { margin-top: var(--space-3); }
+.list-row:hover { border-color: var(--border-strong); }
+.list-row-title { font-weight: 600; color: var(--text-primary); }
+.list-row-meta { font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: var(--space-1); }
+
+/* ── Spinner / loader ── */
+.spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid var(--border-strong);
+  border-top-color: var(--primary-strong);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Modal ── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(2, 4, 10, 0.7);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-5);
+  z-index: 100;
+}
+.modal { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); max-width: 560px; width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--border); }
+.modal-body { padding: var(--space-6); }
+.modal-close { background: none; border: none; color: var(--text-tertiary); font-size: 1.3rem; line-height: 1; padding: var(--space-1); }
+.modal-close:hover { color: var(--text-primary); }
+
+/* ── Toast / error card ── */
+.error-card {
+  border: 1px solid var(--nogo-border);
+  background: var(--nogo-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  color: #7f1d1d;
+  display: flex; gap: var(--space-3); align-items: flex-start;
+}
+
+/* ── Divider ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: var(--space-6) 0; }
+
+/* ── Lot 47 bis: the AO dossier picker (templates/app_analyze.html, static/js/dossier.js) ── */
+.dossier-slots { display: grid; gap: var(--space-4); margin: var(--space-4) 0; }
+.dossier-slot { border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4); }
+.dossier-slot-label { display: block; font-weight: 600; margin-bottom: 4px; }
+.dossier-slot .input { margin-top: var(--space-2); }
+.dossier-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; }
+.dossier-item { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding: 4px 0; }
+.dossier-name { overflow-wrap: anywhere; font-weight: 600; }
+.dossier-total { font-family: var(--font-mono); font-weight: 700; margin: var(--space-3) 0; }
+.dossier-total-over { color: var(--nogo); }

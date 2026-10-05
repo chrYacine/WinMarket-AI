@@ -1,0 +1,37 @@
+# Testing dependencies for WinMarket AI
+# Install with: pip install -r requirements-test.txt
+
+# Testing frameworks
+pytest==9.0.3
+pytest-cov==4.1.0
+pytest-xdist==3.5.0  # Parallel test execution
+pytest-timeout==2.2.0  # Timeout for long-running tests
+pytest-mock==3.12.0  # Mocking support
+
+# Code quality
+black==26.3.1  # Code formatting
+flake8==6.1.0  # Linting
+pylint==3.0.3  # Advanced linting
+mypy==1.7.1  # Type checking
+isort==5.13.2  # Import sorting
+
+# Coverage
+coverage==7.3.2
+
+# Fixtures and utilities
+faker==21.0.0  # Generate fake data for tests
+hypothesis==6.92.0  # Property-based testing
+pypdf==6.18.1  # Extract text from generated PDFs to assert content markers, not just byte-diffs
+
+# Mocking external services
+responses==0.24.1  # Mock HTTP requests
+
+# Performance profiling (optional)
+pytest-benchmark==4.0.0  # Benchmark tests
+
+# Lot 51 : PostgreSQL + pgvector RÉEL, jetable, sans installation système — un binaire
+# embarqué (postgres.exe + l'extension vector précompilée), jamais un service Windows,
+# jamais utilisé par l'application réelle. Seul moyen de qualifier pgvector pour de vrai
+# sur cette machine (ni Docker ni WSL disponibles) sans installer quoi que ce soit au
+# niveau système — voir docs/qa/lot_51_.../RAPPORT.md §1.
+pgserver==0.1.4

@@ -1,0 +1,24 @@
+Tu dois rédiger un dossier de candidature complet et percutant pour cet appel d'offres.
+La décision est GO : on répond avec ambition.
+
+{{CONTEXT}}
+
+MISSION : Rédige les sections du dossier. Chaque phrase doit apporter un argument concret qui aide {{CLIENT}} à nous choisir.
+
+RÈGLE FACTUELLE : N'invente aucun chiffre, certification, référence client, réalisation passée ou fait qui ne figure pas explicitement dans le contexte ci-dessus. Si une information n'est pas disponible, formule autour de ce qui EST disponible plutôt que de combler le vide par une supposition.
+
+**"resume_executif"** — 3 à 4 phrases. (1) Reformulation de l'enjeu stratégique de {{CLIENT}}, (2) Notre positionnement différenciant sur ce type de projet, (3) Ce qu'on va livrer concrètement.
+ÉVITER : Commencer par "Notre entreprise...", les superlatifs non étayés.
+
+**"comprehension_besoin"** — 4 à 5 phrases. Démontrer la compréhension profonde : enjeux métier {{SECTEUR}}, besoins fonctionnels précis, enjeux techniques ({{TECHNOLOGIES}}), facteurs clés de succès.
+
+**"methodologie"** — 5 phrases. Approche spécifique à CE projet : phases liées aux livrables ({{LIVRABLES}}), gestion des risques, jalons de validation, gouvernance adaptée au secteur.
+ÉVITER : "Approche Agile Scrum" sans justification, phases génériques sans lien avec les livrables.
+
+**"equipe_proposee"** — 4 phrases. Chef de projet (profil sectoriel), experts techniques sur la stack demandée, expertises spécialisées (data/sécurité/UX selon l'AO), organisation et continuité.
+
+**"valeur_ajoutee"** — Liste de 3 à 4 items (strings). Raisons objectives et vérifiables de nous choisir. Pas de formules génériques — chaque item doit être spécifique à CET AO.
+
+**"conclusion"** — 2 à 3 phrases. Réaffirmation des enjeux de {{CLIENT}}, proposition d'échange pour approfondir, engagement sobre et professionnel.
+
+Réponds UNIQUEMENT en JSON valide. "valeur_ajoutee" est une liste de strings, les autres sont des strings.

@@ -1,0 +1,64 @@
+# Variables d'environnement (ne jamais commit)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.venv_broken_*/
+venv/
+env/
+.pytest_cache/
+.benchmarks/
+
+# Outputs générés
+data/outputs/
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code — contexte local, ne jamais push
+CLAUDE.md
+IMPROVEMENTS_v2.md
+.claude/
+
+# Logs opérationnels
+logs/
+server_err.log
+server_out.log
+streamlit_log.txt
+streamlit_error.txt
+.streamlit/
+
+# Historique des analyses (données métier)
+data/historique/
+
+# Demandes de contact soumises via le formulaire
+data/contact/
+
+# V3 SaaS — bases de données locales/scratch et artefacts de test
+*.db
+*.sqlite3
+.pytest_tmp/
+.hypothesis/
+# Lot 56: private state is never published.
+.env.*
+!.env.example
+data/
+logs/
+.model-cache/
+*.dump
+*.sqlite
+*.token
+*.log
+artifacts/
+docs/qa/
+qa/artifacts/
+playwright-report/
+test-results/
+
+# Internal evidence belongs in an explicitly private directory outside this repository.
+/RAPPORT_PASSATION.md
+/docs/qualification/

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}Erreur {{ status_code }} — WinMarket AI{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/landing.css?v={{ asset_version('css/landing.css') }}">{% endblock %}
+
+{% block body %}
+{% include "components/site_header.html" %}
+
+<main id="main-content">
+  <section class="section" style="padding-top: calc(var(--header-height) + var(--space-8))">
+    <div class="container" style="max-width: 560px">
+      <div class="card" style="text-align:center">
+        <div style="font-size:2.4rem;margin-bottom:12px">⚠️</div>
+        <h1 style="font-size:1.4rem">Une erreur est survenue ({{ status_code }})</h1>
+        <p class="text-secondary" style="margin-top:12px">{{ detail }}</p>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+          <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
+          <a href="/login" class="btn btn-primary">Se connecter</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% include "components/site_footer.html" %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{
+  "zone_intervention": {
+    "value": [
+      "Lyon"
+    ],
+    "unit": null,
+    "status": "found",
+    "provenance": "llm"
+  },
+  "frequence_nettoyage": {
+    "value": 4,
+    "unit": "par_semaine",
+    "status": "found",
+    "provenance": "llm"
+  },
+  "travail_de_nuit": {
+    "value": false,
+    "unit": null,
+    "status": "found",
+    "provenance": "llm"
+  }
+}

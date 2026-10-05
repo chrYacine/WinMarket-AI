@@ -1,0 +1,45 @@
+{% extends "app_shell.html" %}
+{% block title %}Historique — WinMarket AI{% endblock %}
+
+{% block app_content %}
+<div id="history-root">
+  <div class="page-title">Historique</div>
+  <p class="page-subtitle">Tous les appels d'offres analysés avec WinMarket AI, pour l'organisation sélectionnée.</p>
+
+  <div class="card" style="margin-top:20px">
+    <div class="filters-row">
+      <div class="field">
+        <label for="filter-decision">Décision (page affichée)</label>
+        <select class="select" id="filter-decision">
+          <option>Toutes</option>
+          <option>GO</option>
+          <option>GO SOUS RÉSERVE</option>
+          <option>INCOMPLET</option>
+          <option>NO-GO</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-score">Score minimum (page affichée) : <span id="filter-score-out">0</span></label>
+        <input type="range" id="filter-score" min="0" max="100" value="0">
+      </div>
+      <div class="field">
+        <label for="filter-search">Rechercher (page affichée)</label>
+        <input type="text" class="input" id="filter-search" placeholder="Titre, client, technologie...">
+      </div>
+      <a class="btn btn-secondary btn-sm" href="/api/history/export.csv">📥 Exporter tout l'historique en CSV</a>
+    </div>
+    <p class="text-tertiary" id="history-count" style="margin-bottom:16px">Chargement…</p>
+    <div id="history-list"></div>
+    <div class="callout callout-danger" id="history-error" style="margin-top:16px" hidden></div>
+    <div class="filters-row" id="history-pagination" style="margin-top:16px;justify-content:center" hidden>
+      <button class="btn btn-secondary btn-sm" id="history-prev" type="button">← Page précédente</button>
+      <span class="text-tertiary" id="history-page-label" style="align-self:center"></span>
+      <button class="btn btn-secondary btn-sm" id="history-next" type="button">Page suivante →</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block app_extra_scripts %}
+<script src="/static/js/history.js?v={{ asset_version('js/history.js') }}"></script>
+{% endblock %}

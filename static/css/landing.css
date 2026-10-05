@@ -1,0 +1,180 @@
+/* ==========================================================================
+   WinMarket AI — Landing page
+   ========================================================================== */
+
+/* ── Header ── */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 90;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid transparent;
+  transition: background var(--transition), border-color var(--transition), backdrop-filter var(--transition);
+}
+.site-header.scrolled {
+  background: var(--surface-glass);
+  backdrop-filter: blur(14px) saturate(140%);
+  border-bottom-color: var(--border);
+}
+.site-header .container { display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); }
+
+.main-nav { display: flex; align-items: center; gap: var(--space-6); }
+.main-nav a { color: var(--text-secondary); font-size: var(--fs-sm); font-weight: 500; transition: color var(--transition-fast); }
+.main-nav a:hover { color: var(--text-primary); }
+.main-nav .access-trigger {
+  background: none; border: none; padding: 0; margin: 0; cursor: pointer;
+  color: var(--text-secondary); font-size: var(--fs-sm); font-weight: 500; font-family: inherit;
+  transition: color var(--transition-fast);
+}
+.main-nav .access-trigger:hover { color: var(--text-primary); }
+.header-actions { display: flex; align-items: center; gap: var(--space-3); }
+.nav-toggle { display: none; background: none; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); color: var(--text-primary); }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  padding: calc(var(--header-height) + var(--space-9)) 0 var(--space-8);
+  background: var(--gradient-hero);
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(16,19,31,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(16,19,31,0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(60% 60% at 50% 0%, black, transparent 75%);
+  pointer-events: none;
+}
+.hero .container { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--accent-cyan);
+  margin-bottom: var(--space-5);
+}
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-cyan); box-shadow: 0 0 12px var(--accent-cyan); }
+
+.hero-title {
+  font-size: clamp(1.8rem, 1rem + 3vw, 3.6rem);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  white-space: nowrap;
+  background: linear-gradient(180deg, #10131f 30%, #3a4468 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-text { margin-top: var(--space-5); font-size: var(--fs-body-lg); color: var(--text-secondary); line-height: 1.65; }
+
+@media (max-width: 860px) {
+  .hero-title { white-space: normal; }
+}
+.hero-actions { display: flex; gap: var(--space-4); margin-top: var(--space-7); flex-wrap: wrap; }
+
+.hero-visual { margin-top: var(--space-9); position: relative; }
+
+/* Stylized product mockup — built with HTML/CSS, demonstrative data only */
+.mock-dashboard {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--background-soft) 100%);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+  max-width: 980px;
+  margin-inline: auto;
+  position: relative;
+}
+.mock-dashboard::before {
+  content: "Aperçu illustratif — WinMarket AI";
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--surface-2); border: 1px solid var(--border-strong);
+  padding: 0.25rem 0.9rem; border-radius: var(--radius-full);
+  font-size: var(--fs-xs); color: var(--text-tertiary); font-weight: 600;
+}
+.mock-topbar { display: flex; gap: var(--space-2); margin-bottom: var(--space-5); }
+.mock-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); }
+.mock-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-5); }
+.mock-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-5); }
+.mock-score-value { font-family: var(--font-mono); font-size: 2.4rem; font-weight: 800; color: var(--go); }
+.mock-bar { height: 6px; border-radius: var(--radius-full); background: var(--border); margin-top: var(--space-2); overflow: hidden; }
+.mock-bar span { display: block; height: 100%; border-radius: var(--radius-full); }
+
+/* ── Value strip ── */
+.value-strip {
+  padding: var(--space-6) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.value-strip .container { display: flex; flex-wrap: wrap; gap: var(--space-6); justify-content: space-between; align-items: center; }
+.value-item { display: flex; align-items: center; gap: var(--space-2); color: var(--text-secondary); font-size: var(--fs-sm); font-weight: 600; }
+.value-item .plus { color: var(--text-tertiary); }
+
+/* ── Sections ── */
+.section { padding: var(--space-9) 0; }
+.section-intro { max-width: 640px; margin-bottom: var(--space-7); }
+.section-intro .eyebrow { color: var(--accent-cyan); margin-bottom: var(--space-3); }
+.section-intro h2 { margin-top: var(--space-2); }
+.section-intro p { margin-top: var(--space-4); color: var(--text-secondary); font-size: var(--fs-body-lg); }
+
+/* ── How it works ── */
+.workflow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-5); }
+.workflow-step { padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); position: relative; }
+.workflow-num { font-family: var(--font-mono); color: var(--primary-strong); font-weight: 700; font-size: var(--fs-sm); }
+.workflow-step h3 { margin-top: var(--space-3); }
+.workflow-step p { margin-top: var(--space-2); color: var(--text-tertiary); font-size: var(--fs-sm); }
+
+/* ── Features ── */
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-5); }
+.feature-card { position: relative; overflow: hidden; }
+.feature-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  background: var(--primary-soft); border: 1px solid var(--primary-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; margin-bottom: var(--space-4);
+}
+.feature-card h3 { margin-bottom: var(--space-2); }
+.feature-card p { color: var(--text-tertiary); font-size: var(--fs-sm); }
+
+/* ── Decision section ── */
+.decision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-5); }
+.decision-card { border-radius: var(--radius-lg); padding: var(--space-6); border: 1px solid; }
+.decision-card.go { background: var(--go-soft); border-color: var(--go-border); }
+.decision-card.reserve { background: var(--reserve-soft); border-color: var(--reserve-border); }
+.decision-card.nogo { background: var(--nogo-soft); border-color: var(--nogo-border); }
+.decision-label { font-family: var(--font-mono); font-weight: 800; font-size: 1.4rem; letter-spacing: -0.01em; }
+.decision-card.go .decision-label { color: var(--go); }
+.decision-card.reserve .decision-label { color: var(--reserve); }
+.decision-card.nogo .decision-label { color: var(--nogo); }
+.decision-card p { margin-top: var(--space-3); color: var(--text-secondary); font-size: var(--fs-sm); line-height: 1.6; }
+
+/* ── CTA band ── */
+.cta-band {
+  margin: 0 var(--space-5) var(--space-9);
+  padding: var(--space-8) var(--space-6);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  background: var(--gradient-hero), var(--surface);
+  border: 1px solid var(--border-strong);
+}
+.cta-band h2 { max-width: 24ch; margin-inline: auto; }
+.cta-band p { margin-top: var(--space-3); color: var(--text-secondary); }
+.cta-band .btn { margin-top: var(--space-6); }
+
+/* ── Footer ── */
+.site-footer { border-top: 1px solid var(--border); padding: var(--space-7) 0; }
+.footer-grid { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-6); flex-wrap: wrap; }
+.footer-brand p { margin-top: var(--space-3); max-width: 32ch; color: var(--text-tertiary); font-size: var(--fs-sm); }
+
+@media (max-width: 860px) {
+  .main-nav { display: none; }
+  .nav-toggle { display: inline-flex; }
+  .mock-grid { grid-template-columns: 1fr; }
+}

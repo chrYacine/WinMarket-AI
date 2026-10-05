@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}WinMarket AI{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}WinMarket AI — plateforme intelligente d'analyse et d'aide à la décision pour les appels d'offres.{% endblock %}">
+  {# B14-T1: same CSRF token every server-rendered <form> on this page already
+     embeds as a hidden field (see get_or_create_csrf_token/attach_csrf_cookie,
+     src/web/security/csrf.py) — exposed here too so JS-driven fetch() calls
+     (static/js/analyze.js, static/js/knowledge.js) can read it and attach it
+     as the X-CSRF-Token header, since the underlying cookie is httponly and
+     not directly readable from JS. Empty/absent on pages that don't pass
+     csrf_token (e.g. landing, pricing) — those pages have no mutating fetch
+     calls that need it. #}
+  <meta name="csrf-token" content="{{ csrf_token|default('') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%233b6cff%22/><text x=%2216%22 y=%2222%22 font-size=%2216%22 font-family=%22sans-serif%22 font-weight=%22800%22 fill=%22white%22 text-anchor=%22middle%22>W</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/variables.css?v={{ asset_version('css/variables.css') }}">
+  <link rel="stylesheet" href="/static/css/base.css?v={{ asset_version('css/base.css') }}">
+  <link rel="stylesheet" href="/static/css/components.css?v={{ asset_version('css/components.css') }}">
+  {% block extra_css %}{% endblock %}
+  <style>body{font-family:'Inter',var(--font-sans);}</style>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+  {% block body %}{% endblock %}
+  <script src="/static/js/main.js?v={{ asset_version('js/main.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,152 @@
+# B24-T1 — full dependency lock, generated with this project's own tool
+# (plain `pip freeze`, no new lock tool introduced — no poetry.lock/
+# pip-tools available or added). Captures EXACTLY what is currently
+# installed in .venv and verified working (`pip check` clean, full test
+# suite green against this exact set) — no version was upgraded to produce
+# this file. Regenerate after intentionally changing a dependency:
+#   pip install -r requirements.txt -r requirements-test.txt
+#   pip freeze > requirements.lock.txt
+# requirements.txt/requirements-test.txt remain the source of DIRECT
+# dependencies with their minimum-version intent; this file additionally
+# pins every transitive dependency for a reproducible install.
+#
+# Lot 43: streamlit and the packages only it required (pandas, altair, blinker, jsonschema,
+# jsonschema-specifications, referencing, rpds-py, protobuf, pyarrow, pydeck, toml, tzdata,
+# watchdog) were removed by hand from this file after checking, with importlib.metadata on the
+# installed environment, that nothing else reachable from requirements*.txt (including
+# uvicorn[standard]) requires them and that no code under src/ tests/ scripts/ imports them.
+# The local .venv still contains them until it is recreated; regenerate with pip freeze from a
+# clean environment (see the command above) when convenient.
+#
+# Lot 51 (2026-09-24): added fastembed/onnxruntime (local embeddings, no torch), pgvector (SQLAlchemy
+# vector type/operators, a CLIENT library, never a server) and, TEST-ONLY (requirements-test.txt),
+# pgserver (an embedded, disposable PostgreSQL+pgvector binary — never installed as a service, never the
+# application's own database). Added via `pip install` into the SAME already-verified .venv this lock
+# describes (no fresh-environment re-verification this lot — see docs/qa/lot_51_.../RAPPORT.md §1); `pip
+# check` stayed clean and every new/changed pin is listed below, nothing else was upgraded. This .venv
+# still also carries lot-43's pre-removal streamlit leftovers (altair, blinker, pandas, pyarrow, pydeck,
+# streamlit, toml, tzdata, watchdog, jsonschema*, referencing, rpds-py) exactly as already documented above
+# — untouched by this lot, not this lot's job to clean up.
+#
+# Lot 46 (2026-09-20): this hand-edited lock was verified on a FRESH virtual environment (Python 3.12.10,
+# Windows 11, pip 25.0.1, no system site-packages): `pip install -r requirements.lock.txt` succeeded, `pip check`
+# clean, the 93 installed distributions are exactly these 93 pins, they are exactly the dependency closure of
+# requirements*.txt (no orphan, none missing), every specifier is satisfied and every third-party import of the
+# repository is provided (scripts/check_lock_consistency.py). No pin was changed. Every pin also has a Linux
+# (manylinux, cp312) or pure-Python wheel on PyPI (`pip download --only-binary`), i.e. the CI install needs no
+# compilation. LIMIT: it was generated on Windows — `colorama` is pinned (Windows-only) and `uvloop` (required by
+# uvicorn[standard] on Linux) is not; a Linux-generated lock is the proper fix for a Linux-identical install.
+# Lot 56 bis: targeted security update, regenerated with pip freeze; see docs/qualification/lot56bis.json.
+alembic==1.19.2
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anthropic==1.2.0
+anyio==4.14.2
+argon2-cffi==25.1.0
+argon2-cffi-bindings==26.1.0
+asn1crypto==1.5.1
+astroid==3.0.3
+attrs==26.1.0
+black==26.3.1
+certifi==2026.7.22
+cffi==2.1.1
+charset-normalizer==3.5.1
+click==8.5.0
+cloudpickle==3.1.2
+colorama==0.4.6
+coverage==7.3.2
+dill==0.4.1
+docstring_parser==0.18.0
+execnet==2.1.2
+Faker==21.0.0
+fastapi==0.141.1
+fastembed==0.8.1
+fasteners==0.20
+filelock==4.0.3
+flake8==6.1.0
+flatbuffers==25.12.19
+fsspec==2026.9.0
+greenlet==3.5.5
+h11==0.16.0
+hf-xet==1.6.0
+httpcore==1.0.9
+httpcore2==2.12.0
+httptools==0.8.0
+httpx==0.28.1
+httpx2==2.12.0
+huggingface_hub==1.33.0
+hypothesis==6.92.0
+idna==3.19
+iniconfig==2.3.0
+isort==5.13.2
+itsdangerous==2.2.0
+Jinja2==3.1.6
+jiter==0.16.0
+joblib==1.6.0
+loguru==0.7.3
+lxml==6.1.2
+Mako==1.4.1
+MarkupSafe==3.0.3
+mccabe==0.7.0
+mmh3==5.3.0
+mypy==1.7.1
+mypy_extensions==1.1.0
+narwhals==2.25.0
+numpy==2.5.2
+onnxruntime==1.30.0
+packaging==26.3
+pathspec==1.1.1
+pg8000==1.31.5
+pgserver==0.1.4
+pgvector==0.5.0
+pillow==12.3.0
+platformdirs==4.11.5
+pluggy==1.6.0
+protobuf==7.36.0
+psutil==7.2.2
+py-cpuinfo==9.0.0
+py_rust_stemmers==0.1.8
+pycodestyle==2.11.1
+pycparser==3.0
+pydantic==2.13.5
+pydantic_core==2.46.5
+pyflakes==3.1.0
+Pygments==2.21.0
+pylint==3.0.3
+pymupdf==1.28.2
+pypdf==6.18.1
+pytest==9.0.3
+pytest-benchmark==4.0.0
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-timeout==2.2.0
+pytest-xdist==3.5.0
+python-dateutil==2.9.0.post0
+python-docx==1.2.0
+python-dotenv==1.2.3
+python-multipart==0.0.32
+pytokens==0.4.1
+PyYAML==6.0.3
+reportlab==5.0.1
+requests==2.34.2
+responses==0.24.1
+scikit-learn==1.9.0
+scipy==1.18.1
+scramp==1.4.17
+six==1.17.0
+sniffio==1.3.1
+sortedcontainers==2.4.0
+SQLAlchemy==2.0.52
+starlette==1.6.0
+threadpoolctl==3.6.0
+tokenizers==0.23.2
+tomlkit==0.15.1
+tqdm==4.70.1
+truststore==0.10.4
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+urllib3==2.7.0
+uvicorn==0.52.4
+watchfiles==1.2.0
+websockets==16.1.1
+win32_setctime==1.2.0

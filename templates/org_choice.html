@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Choisir une organisation — WinMarket AI{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/landing.css?v={{ asset_version('css/landing.css') }}">{% endblock %}
+
+{% block body %}
+{% include "components/site_header.html" %}
+
+<main id="main-content">
+  <section class="section" style="padding-top: calc(var(--header-height) + var(--space-8))">
+    <div class="container" style="max-width: 560px">
+      <div class="card">
+        <h1 style="font-size:1.4rem">Choisissez une organisation</h1>
+        <p class="text-secondary" style="margin-top:12px">
+          Votre compte appartient à plusieurs organisations. Vos analyses, votre historique et votre
+          configuration de scoring sont propres à chacune : indiquez celle avec laquelle travailler.
+          Vous pourrez en changer depuis le menu latéral.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+          {% for org in organizations %}
+          <button type="button" class="btn btn-secondary" data-org-choice="{{ org.id }}">{{ org.name }}</button>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% include "components/site_footer.html" %}
+{% endblock %}

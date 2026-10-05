@@ -1,0 +1,1214 @@
+{
+  "_comment": "Recorded with the pre-cleanup code (lot 43, before any edit). `expected` came from the legacy policy=None path AND from the explicit snapshot below (they agreed).",
+  "demo_policy": {
+    "weights": {
+      "Adequation expertise": 20,
+      "References similaires": 15,
+      "Disponibilite equipe": 10,
+      "Rentabilite estimee": 10,
+      "Faisabilite delai": 10,
+      "Certifications requises": 10,
+      "Complexite technique": 5,
+      "Connaissance secteur": 5,
+      "Potentiel commercial": 5,
+      "Risque contractuel": 5,
+      "Solidite client": 3,
+      "Valeur strategique": 2
+    },
+    "threshold_go": 88,
+    "threshold_sous_reserve": 60,
+    "mastered_technologies": [
+      ".net",
+      "angular",
+      "ansible",
+      "aws",
+      "azure",
+      "c#",
+      "ci/cd",
+      "devops",
+      "django",
+      "docker",
+      "fastapi",
+      "gcp",
+      "ia",
+      "java",
+      "kubernetes",
+      "llm",
+      "node",
+      "nodejs",
+      "oracle",
+      "postgresql",
+      "power bi",
+      "python",
+      "rag",
+      "react",
+      "spring",
+      "sql server",
+      "terraform",
+      "typescript",
+      "vue"
+    ],
+    "certifications_held": [
+      "iso 27001",
+      "iso27001",
+      "qualiopi",
+      "rgpd"
+    ],
+    "budget_minimum_eur": 50000,
+    "max_charge_pct": 95,
+    "max_unmastered_technologies": 4,
+    "certification_penalty_score": 20
+  },
+  "legacy_cases": {
+    "it_go_candidate": {
+      "inputs": {
+        "ao": {
+          "titre": "Plateforme",
+          "client": "Client",
+          "secteur": "Finance",
+          "budget_estime": 250000.0,
+          "technologies_demandees": [
+            "Python",
+            "React",
+            "AWS"
+          ],
+          "competences_requises": [
+            "Docker"
+          ],
+          "texte_source": "Développement d'une plateforme. Durée 12 mois."
+        },
+        "company": {
+          "raison_sociale": "Client synthétique",
+          "secteur": "Finance",
+          "solidite_financiere": "Bonne"
+        },
+        "evidences": [
+          {
+            "query": "q",
+            "source": "ref_0.md",
+            "score": 0.9,
+            "content": "Référence synthétique numéro 0."
+          },
+          {
+            "query": "q",
+            "source": "ref_1.md",
+            "score": 0.9,
+            "content": "Référence synthétique numéro 1."
+          },
+          {
+            "query": "q",
+            "source": "ref_2.md",
+            "score": 0.9,
+            "content": "Référence synthétique numéro 2."
+          },
+          {
+            "query": "q",
+            "source": "ref_3.md",
+            "score": 0.9,
+            "content": "Référence synthétique numéro 3."
+          },
+          {
+            "query": "q",
+            "source": "ref_4.md",
+            "score": 0.9,
+            "content": "Référence synthétique numéro 4."
+          }
+        ],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité synthétique."
+        }
+      },
+      "expected": {
+        "decision": "GO",
+        "score_global": 90.5,
+        "blockers": [],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            20.0,
+            100.0
+          ],
+          [
+            "Références similaires",
+            15.0,
+            96.0
+          ],
+          [
+            "Disponibilité équipe",
+            10.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            10.0,
+            90.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            5.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            5.0,
+            80.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            85.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            3.0,
+            85.0
+          ],
+          [
+            "Valeur stratégique",
+            2.0,
+            90.0
+          ]
+        ]
+      }
+    },
+    "it_budget_blocker": {
+      "inputs": {
+        "ao": {
+          "titre": "Petit projet",
+          "client": "Client",
+          "budget_estime": 40000.0,
+          "technologies_demandees": [
+            "Python"
+          ],
+          "texte_source": "Petit projet."
+        },
+        "company": {
+          "raison_sociale": "Client synthétique",
+          "secteur": "Finance",
+          "solidite_financiere": "Bonne"
+        },
+        "evidences": [],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité synthétique."
+        }
+      },
+      "expected": {
+        "decision": "NO-GO",
+        "score_global": 73.0,
+        "blockers": [
+          "Budget inferieur au seuil minimal de rentabilite ESN (50 000 EUR)"
+        ],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            20.0,
+            100.0
+          ],
+          [
+            "Références similaires",
+            15.0,
+            30.0
+          ],
+          [
+            "Disponibilité équipe",
+            10.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            10.0,
+            40.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            5.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            5.0,
+            80.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            40.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            3.0,
+            85.0
+          ],
+          [
+            "Valeur stratégique",
+            2.0,
+            70.0
+          ]
+        ]
+      }
+    },
+    "it_missing_certification": {
+      "inputs": {
+        "ao": {
+          "titre": "Cloud souverain",
+          "client": "Client",
+          "budget_estime": 300000.0,
+          "technologies_demandees": [
+            "Azure"
+          ],
+          "certifications_obligatoires": [
+            "SecNumCloud"
+          ],
+          "texte_source": "Hébergement qualifié."
+        },
+        "company": {
+          "raison_sociale": "Client synthétique",
+          "secteur": "Finance",
+          "solidite_financiere": "Bonne"
+        },
+        "evidences": [
+          {
+            "query": "q",
+            "source": "ref_1.md",
+            "score": 0.8,
+            "content": "Référence synthétique numéro 1."
+          }
+        ],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité synthétique."
+        }
+      },
+      "expected": {
+        "decision": "NO-GO",
+        "score_global": 78.3,
+        "blockers": [
+          "Certification obligatoire absente : SecNumCloud"
+        ],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            20.0,
+            100.0
+          ],
+          [
+            "Références similaires",
+            15.0,
+            68.0
+          ],
+          [
+            "Disponibilité équipe",
+            10.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            10.0,
+            90.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            20.0
+          ],
+          [
+            "Complexité technique",
+            5.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            5.0,
+            80.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            85.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            3.0,
+            85.0
+          ],
+          [
+            "Valeur stratégique",
+            2.0,
+            90.0
+          ]
+        ]
+      }
+    },
+    "it_too_many_unmastered": {
+      "inputs": {
+        "ao": {
+          "titre": "Legacy",
+          "client": "Client",
+          "budget_estime": 200000.0,
+          "technologies_demandees": [
+            "Cobol",
+            "Fortran",
+            "Pascal",
+            "Ada",
+            "Basic"
+          ],
+          "texte_source": "Modernisation."
+        },
+        "company": {
+          "raison_sociale": "Client synthétique",
+          "secteur": "Finance",
+          "solidite_financiere": "Bonne"
+        },
+        "evidences": [],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité synthétique."
+        }
+      },
+      "expected": {
+        "decision": "NO-GO",
+        "score_global": 59.2,
+        "blockers": [
+          "Trop de technologies non maitrisees : cobol, basic, pascal, fortran, ada"
+        ],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            20.0,
+            0.0
+          ],
+          [
+            "Références similaires",
+            15.0,
+            30.0
+          ],
+          [
+            "Disponibilité équipe",
+            10.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            10.0,
+            90.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            5.0,
+            60.0
+          ],
+          [
+            "Connaissance secteur",
+            5.0,
+            80.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            85.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            3.0,
+            85.0
+          ],
+          [
+            "Valeur stratégique",
+            2.0,
+            70.0
+          ]
+        ]
+      }
+    },
+    "it_team_overloaded": {
+      "inputs": {
+        "ao": {
+          "titre": "Projet",
+          "client": "Client",
+          "budget_estime": 200000.0,
+          "technologies_demandees": [
+            "Java"
+          ],
+          "texte_source": "Projet."
+        },
+        "company": {
+          "raison_sociale": "Client synthétique",
+          "secteur": "Finance",
+          "solidite_financiere": "Bonne"
+        },
+        "evidences": [
+          {
+            "query": "q",
+            "source": "ref_1.md",
+            "score": 0.7,
+            "content": "Référence synthétique numéro 1."
+          }
+        ],
+        "capacity": {
+          "charge_actuelle_pct": 99,
+          "capacite_restante_pct": 1,
+          "equipe_disponible": false,
+          "commentaire": "Capacité synthétique."
+        }
+      },
+      "expected": {
+        "decision": "NO-GO",
+        "score_global": 80.8,
+        "blockers": [
+          "Charge equipe superieure a 95% — impossible de demarrer"
+        ],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            20.0,
+            100.0
+          ],
+          [
+            "Références similaires",
+            15.0,
+            64.0
+          ],
+          [
+            "Disponibilité équipe",
+            10.0,
+            45.0
+          ],
+          [
+            "Rentabilité estimée",
+            10.0,
+            90.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            5.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            5.0,
+            80.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            85.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            3.0,
+            85.0
+          ],
+          [
+            "Valeur stratégique",
+            2.0,
+            70.0
+          ]
+        ]
+      }
+    },
+    "it_tight_deadline_reserve": {
+      "inputs": {
+        "ao": {
+          "titre": "Refonte",
+          "client": "Client",
+          "secteur": "Public",
+          "budget_estime": 120000.0,
+          "technologies_demandees": [
+            "Java",
+            "Spring"
+          ],
+          "texte_source": "Livraison sous 6 semaines. Pénalités de retard."
+        },
+        "company": {
+          "raison_sociale": "Client synthétique",
+          "secteur": "Public",
+          "solidite_financiere": "A verifier"
+        },
+        "evidences": [
+          {
+            "query": "q",
+            "source": "ref_1.md",
+            "score": 0.6,
+            "content": "Référence synthétique numéro 1."
+          }
+        ],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité synthétique."
+        }
+      },
+      "expected": {
+        "decision": "GO SOUS RESERVE",
+        "score_global": 78.5,
+        "blockers": [],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            20.0,
+            100.0
+          ],
+          [
+            "Références similaires",
+            15.0,
+            60.0
+          ],
+          [
+            "Disponibilité équipe",
+            10.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            10.0,
+            80.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            45.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            5.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            5.0,
+            80.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            60.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            60.0
+          ],
+          [
+            "Solidité client",
+            3.0,
+            85.0
+          ],
+          [
+            "Valeur stratégique",
+            2.0,
+            70.0
+          ]
+        ]
+      }
+    },
+    "it_no_budget_no_techs": {
+      "inputs": {
+        "ao": {
+          "titre": "Sans détail",
+          "client": "Client",
+          "texte_source": ""
+        },
+        "company": {},
+        "evidences": [],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité synthétique."
+        }
+      },
+      "expected": {
+        "decision": "GO SOUS RESERVE",
+        "score_global": 70.0,
+        "blockers": [],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            20.0,
+            80.0
+          ],
+          [
+            "Références similaires",
+            15.0,
+            30.0
+          ],
+          [
+            "Disponibilité équipe",
+            10.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            10.0,
+            65.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            5.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            5.0,
+            65.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            40.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            3.0,
+            60.0
+          ],
+          [
+            "Valeur stratégique",
+            2.0,
+            70.0
+          ]
+        ]
+      }
+    }
+  },
+  "custom_cases": {
+    "cleaning_lyon_marseille_recorded": {
+      "inputs": {
+        "ao": {
+          "titre": "Nettoyage de locaux (synthétique)",
+          "client": "Communauté d'agglomération Exemple",
+          "secteur": "Collectivité/Public",
+          "budget_estime": 120000.0,
+          "texte_source": "AVIS DE CONSULTATION (SYNTHÉTIQUE) — Prestations de nettoyage de locaux administratifs\nPouvoir adjudicateur : Communauté d'agglomération Exemple (entité fictive).\nObjet : le titulaire assurera le nettoyage courant des bureaux des sites de Lyon et de Marseille. Les deux sites sont obligatoires : une offre qui ne couvre pas les deux lieux d'exécution sera écartée.\nFréquence exigée : quatre interventions par semaine sur chacun des sites.\nHoraires : les interventions ont lieu en journée. Le travail de nuit n'est pas requis.\nDurée du marché : 24 mois. Budget estimé : 120 000 € HT."
+        },
+        "company": {},
+        "evidences": [],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité de test."
+        },
+        "facts": {
+          "zone_intervention": {
+            "value": [
+              "Lyon",
+              "Marseille"
+            ],
+            "unit": null,
+            "status": "found",
+            "provenance": "llm",
+            "reason": null
+          },
+          "frequence_nettoyage": {
+            "value": 4.0,
+            "unit": "par semaine",
+            "status": "found",
+            "provenance": "llm",
+            "reason": null
+          },
+          "travail_de_nuit": {
+            "value": false,
+            "unit": null,
+            "status": "found",
+            "provenance": "llm",
+            "reason": null
+          }
+        }
+      },
+      "policy": {
+        "weights": {
+          "Adequation expertise": 0,
+          "References similaires": 10,
+          "Disponibilite equipe": 15,
+          "Rentabilite estimee": 15,
+          "Faisabilite delai": 10,
+          "Certifications requises": 10,
+          "Complexite technique": 0,
+          "Connaissance secteur": 10,
+          "Potentiel commercial": 5,
+          "Risque contractuel": 5,
+          "Solidite client": 5,
+          "Valeur strategique": 0
+        },
+        "threshold_go": 80,
+        "threshold_sous_reserve": 55,
+        "mastered_technologies": [],
+        "certifications_held": [],
+        "budget_minimum_eur": 0,
+        "max_charge_pct": 100,
+        "max_unmastered_technologies": 999,
+        "certification_penalty_score": 20,
+        "custom_criteria": [
+          {
+            "id": "zone_couverte",
+            "label": "Sites couverts",
+            "fact_key": "zone_intervention",
+            "operator": "list_coverage",
+            "weight": 8,
+            "blocking": true,
+            "pass_score": 100,
+            "fail_score": 0
+          },
+          {
+            "id": "frequence_ok",
+            "label": "Fréquence compatible",
+            "fact_key": "frequence_nettoyage",
+            "operator": "numeric_threshold",
+            "comparison": "provider_gte_ao",
+            "weight": 5,
+            "blocking": false,
+            "pass_score": 100,
+            "fail_score": 20
+          },
+          {
+            "id": "nuit_ok",
+            "label": "Travail de nuit cohérent",
+            "fact_key": "travail_de_nuit",
+            "operator": "equality",
+            "weight": 2,
+            "blocking": false,
+            "pass_score": 100,
+            "fail_score": 0
+          }
+        ],
+        "declared_facts": {
+          "zone_intervention": {
+            "key": "zone_intervention",
+            "label": "Sites d'intervention",
+            "type": "list",
+            "unit": null,
+            "value": [
+              "Lyon"
+            ]
+          },
+          "frequence_nettoyage": {
+            "key": "frequence_nettoyage",
+            "label": "Fréquence d'intervention",
+            "type": "number",
+            "unit": "par_semaine",
+            "value": 3
+          },
+          "travail_de_nuit": {
+            "key": "travail_de_nuit",
+            "label": "Travail de nuit",
+            "type": "boolean",
+            "unit": null,
+            "value": false
+          }
+        }
+      },
+      "expected": {
+        "decision": "NO-GO",
+        "score_global": 65.5,
+        "blockers": [
+          "Sites couverts : condition bloquante non satisfaite"
+        ],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            0.0,
+            80.0
+          ],
+          [
+            "Références similaires",
+            10.0,
+            30.0
+          ],
+          [
+            "Disponibilité équipe",
+            15.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            15.0,
+            80.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            0.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            10.0,
+            65.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            60.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            5.0,
+            60.0
+          ],
+          [
+            "Valeur stratégique",
+            0.0,
+            70.0
+          ],
+          [
+            "Sites couverts",
+            8.0,
+            0.0
+          ],
+          [
+            "Fréquence compatible",
+            5.0,
+            20.0
+          ],
+          [
+            "Travail de nuit cohérent",
+            2.0,
+            100.0
+          ]
+        ]
+      }
+    },
+    "it_lyon_recorded": {
+      "inputs": {
+        "ao": {
+          "titre": "Prestations IT à Lyon (synthétique)",
+          "client": "Client synthétique",
+          "secteur": "",
+          "budget_estime": 500.0,
+          "texte_source": "Le marché concerne des prestations IT à Lyon.\nLe budget maximal est de 500 EUR.\nLes prestations sont réalisées 4 fois par semaine.\nLe travail de nuit est interdit."
+        },
+        "company": {},
+        "evidences": [],
+        "capacity": {
+          "charge_actuelle_pct": 40,
+          "capacite_restante_pct": 60,
+          "equipe_disponible": true,
+          "commentaire": "Capacité de test."
+        },
+        "facts": {
+          "zone_intervention": {
+            "value": [
+              "Lyon"
+            ],
+            "unit": null,
+            "status": "found",
+            "provenance": "llm",
+            "reason": null
+          },
+          "frequence_nettoyage": {
+            "value": 4.0,
+            "unit": "par semaine",
+            "status": "found",
+            "provenance": "llm",
+            "reason": null
+          },
+          "travail_de_nuit": {
+            "value": false,
+            "unit": null,
+            "status": "found",
+            "provenance": "llm",
+            "reason": null
+          }
+        }
+      },
+      "policy": {
+        "weights": {
+          "Adequation expertise": 0,
+          "References similaires": 10,
+          "Disponibilite equipe": 15,
+          "Rentabilite estimee": 15,
+          "Faisabilite delai": 10,
+          "Certifications requises": 10,
+          "Complexite technique": 0,
+          "Connaissance secteur": 10,
+          "Potentiel commercial": 5,
+          "Risque contractuel": 5,
+          "Solidite client": 5,
+          "Valeur strategique": 0
+        },
+        "threshold_go": 80,
+        "threshold_sous_reserve": 55,
+        "mastered_technologies": [],
+        "certifications_held": [],
+        "budget_minimum_eur": 0,
+        "max_charge_pct": 100,
+        "max_unmastered_technologies": 999,
+        "certification_penalty_score": 20,
+        "custom_criteria": [
+          {
+            "id": "zone_couverte",
+            "label": "Sites couverts",
+            "fact_key": "zone_intervention",
+            "operator": "list_coverage",
+            "weight": 8,
+            "blocking": true,
+            "pass_score": 100,
+            "fail_score": 0
+          },
+          {
+            "id": "frequence_ok",
+            "label": "Fréquence compatible",
+            "fact_key": "frequence_nettoyage",
+            "operator": "numeric_threshold",
+            "comparison": "provider_gte_ao",
+            "weight": 5,
+            "blocking": false,
+            "pass_score": 100,
+            "fail_score": 20
+          },
+          {
+            "id": "nuit_ok",
+            "label": "Travail de nuit cohérent",
+            "fact_key": "travail_de_nuit",
+            "operator": "equality",
+            "weight": 2,
+            "blocking": false,
+            "pass_score": 100,
+            "fail_score": 0
+          }
+        ],
+        "declared_facts": {
+          "zone_intervention": {
+            "key": "zone_intervention",
+            "label": "Sites d'intervention",
+            "type": "list",
+            "unit": null,
+            "value": [
+              "Lyon"
+            ]
+          },
+          "frequence_nettoyage": {
+            "key": "frequence_nettoyage",
+            "label": "Fréquence d'intervention",
+            "type": "number",
+            "unit": "par_semaine",
+            "value": 3
+          },
+          "travail_de_nuit": {
+            "key": "travail_de_nuit",
+            "label": "Travail de nuit",
+            "type": "boolean",
+            "unit": null,
+            "value": false
+          }
+        }
+      },
+      "expected": {
+        "decision": "GO SOUS RESERVE",
+        "score_global": 66.5,
+        "blockers": [],
+        "completeness": "complete",
+        "missing": [],
+        "criteres": [
+          [
+            "Adéquation expertise",
+            0.0,
+            80.0
+          ],
+          [
+            "Références similaires",
+            10.0,
+            30.0
+          ],
+          [
+            "Disponibilité équipe",
+            15.0,
+            90.0
+          ],
+          [
+            "Rentabilité estimée",
+            15.0,
+            40.0
+          ],
+          [
+            "Faisabilité délai",
+            10.0,
+            75.0
+          ],
+          [
+            "Certifications requises",
+            10.0,
+            100.0
+          ],
+          [
+            "Complexité technique",
+            0.0,
+            80.0
+          ],
+          [
+            "Connaissance secteur",
+            10.0,
+            65.0
+          ],
+          [
+            "Potentiel commercial",
+            5.0,
+            40.0
+          ],
+          [
+            "Risque contractuel",
+            5.0,
+            80.0
+          ],
+          [
+            "Solidité client",
+            5.0,
+            60.0
+          ],
+          [
+            "Valeur stratégique",
+            0.0,
+            70.0
+          ],
+          [
+            "Sites couverts",
+            8.0,
+            100.0
+          ],
+          [
+            "Fréquence compatible",
+            5.0,
+            20.0
+          ],
+          [
+            "Travail de nuit cohérent",
+            2.0,
+            100.0
+          ]
+        ]
+      }
+    }
+  }
+}

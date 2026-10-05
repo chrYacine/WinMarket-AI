@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block title %}Créer un compte Starter — WinMarket AI{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/landing.css?v={{ asset_version('css/landing.css') }}">{% endblock %}
+
+{% block body %}
+{% include "components/site_header.html" %}
+
+<main id="main-content">
+  <section class="section" style="padding-top: calc(var(--header-height) + var(--space-8))">
+    <div class="container" style="max-width: 560px">
+      <div class="section-intro" style="margin-inline: auto; text-align: center">
+        <span class="eyebrow">Offre Starter</span>
+        <h1 style="font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.25rem)">Créer votre compte Starter</h1>
+        <p>Votre compte sera activé par notre équipe sous 24 heures maximum.</p>
+      </div>
+
+      <div class="card" style="margin-top: 32px">
+        {% if error %}
+        <div class="error-card" style="margin-bottom: 20px">
+          <span>⚠️</span>
+          <div><p style="font-size:.9rem">{{ error }}</p></div>
+        </div>
+        {% endif %}
+
+        <form method="post" action="/register">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field">
+              <label for="reg-first-name">Prénom</label>
+              <input class="input" type="text" id="reg-first-name" name="first_name" autocomplete="given-name" value="{{ first_name or '' }}" required>
+            </div>
+            <div class="field">
+              <label for="reg-last-name">Nom</label>
+              <input class="input" type="text" id="reg-last-name" name="last_name" autocomplete="family-name" value="{{ last_name or '' }}" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="reg-email">Email</label>
+            <input class="input" type="email" id="reg-email" name="email" autocomplete="email" value="{{ email or '' }}" required>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field">
+              <label for="reg-company">Société <span class="text-tertiary">(facultatif)</span></label>
+              <input class="input" type="text" id="reg-company" name="company" autocomplete="organization" value="{{ company or '' }}">
+            </div>
+            <div class="field">
+              <label for="reg-job-title">Fonction <span class="text-tertiary">(facultatif)</span></label>
+              <input class="input" type="text" id="reg-job-title" name="job_title" value="{{ job_title or '' }}">
+            </div>
+          </div>
+          <div class="field">
+            <label for="reg-phone">Téléphone <span class="text-tertiary">(facultatif)</span></label>
+            <input class="input" type="tel" id="reg-phone" name="phone" autocomplete="tel" value="{{ phone or '' }}">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field">
+              <label for="reg-password">Mot de passe</label>
+              <input class="input" type="password" id="reg-password" name="password" autocomplete="new-password" required>
+              <p class="field-hint">Au moins 10 caractères, une majuscule, une minuscule et un chiffre.</p>
+            </div>
+            <div class="field">
+              <label for="reg-password-confirm">Confirmation</label>
+              <input class="input" type="password" id="reg-password-confirm" name="password_confirm" autocomplete="new-password" required>
+            </div>
+          </div>
+          <div class="field" style="display:flex;align-items:flex-start;gap:10px">
+            <input type="checkbox" id="reg-accept" name="accept_terms" value="1" style="margin-top:4px" required>
+            <label for="reg-accept" style="font-weight:400;margin-bottom:0">J'accepte les conditions d'utilisation et la politique de confidentialité.</label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Créer mon compte Starter</button>
+        </form>
+
+        <div class="divider"></div>
+        <div style="text-align:center;font-size:var(--fs-sm)" class="text-secondary">
+          Déjà un compte ? <a href="/login" style="color:var(--primary-strong);font-weight:600">Se connecter</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% include "components/site_footer.html" %}
+{% endblock %}

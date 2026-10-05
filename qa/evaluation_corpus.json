@@ -1,0 +1,20 @@
+{
+  "synthetic": true,
+  "documents": {
+    "chantier.md": "Renovation complete d'un groupe scolaire a Meriden en 2023, incluant l'isolation thermique des facades.",
+    "certification.md": "Certification QUALIBAT RGE 8621 valable jusqu'en 2026.",
+    "hors_sujet.md": "Menu de la cantine municipale pour la semaine du 12 mars : poisson, legumes, fromage."
+  },
+  "queries": [
+    {"id":"paraphrase","query":"Avez-vous deja realise des travaux de renovation energetique dans une ecole primaire ?","expected_references":["chantier.md"]},
+    {"id":"exact_reference","query":"QUALIBAT RGE 8621","expected_references":["certification.md"]}
+  ],
+  "additional_contract_cases": {
+    "off_topic_not_scoring_evidence_without_rerank": "tests/test_lot51_bis_rag_frontiers.py",
+    "reference_count_not_passage_count": "tests/test_lot51_bis_rag_frontiers.py",
+    "scope_replacement_deletion": "tests/test_lot51_hybrid_rag.py",
+    "missing_conflicting_fact_incomplete": "tests/test_lot52_fact_search.py",
+    "sourced_acceptance_and_parent_preservation": "qa/browser_recipe.py",
+    "failed_reindex_keeps_valid_index": "tests/test_lot51_bis_rag_frontiers.py"
+  }
+}

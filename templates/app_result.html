@@ -1,0 +1,586 @@
+{% extends "app_shell.html" %}
+{% block title %}{{ ao.titre }} — Résultats — WinMarket AI{% endblock %}
+
+{% block app_content %}
+{% set dec = result.decision %}
+{# B27-T1 (DEFECT confirmed): INCOMPLET (src/agents/scoring_engine.py's own
+   business-rules-missing decision, distinct from a real NO-GO — see
+   docs/api/B06_T4_BUSINESS_RULES_CONTRACT.md) fell into the 'else' branch
+   below and was displayed as a plain "NO-GO" with the ❌ icon — a
+   misconfiguration (a business rule never set) was indistinguishable from
+   a genuine rejected opportunity. INCOMPLET now gets its own neutral
+   (never favorable, never a false rejection) presentation. #}
+{% set dec_class = 'go' if dec == 'GO' else ('reserve' if 'RESERVE' in dec else ('incomplete' if dec == 'INCOMPLET' else 'nogo')) %}
+{% set dec_label = 'GO' if dec == 'GO' else ('GO SOUS RÉSERVE' if 'RESERVE' in dec else ('INCOMPLET' if dec == 'INCOMPLET' else 'NO-GO')) %}
+{% set dec_icon = '✅' if dec == 'GO' else ('⚠️' if 'RESERVE' in dec else ('❔' if dec == 'INCOMPLET' else '❌')) %}
+{# Lot 50 §4 — moved up from further below so the scope banner (distinct from the INCOMPLET/scoring banners)
+   can be shown near the top of the page too; the dossier detail card further down still uses this same variable. #}
+{% set dossier = ao.dossier %}
+{% set category_labels = {'rc': 'RC – Règlement de consultation', 'cctp': 'CCTP / Cahier des charges', 'ccap': 'CCAP / Conditions contractuelles', 'acte_engagement': "Acte d'engagement"} %}
+
+<div class="breadcrumb"><a href="/app/analyser">Nouvelle analyse</a> / Résultats</div>
+
+<div class="card result-header" style="margin-bottom:20px">
+  <div>
+    <div class="result-meta-label">Appel d'offres</div>
+    <div class="result-title">{{ ao.titre }}</div>
+    <div class="result-sub">
+      Client : {{ ao.client }} &nbsp;|&nbsp; Secteur : {{ ao.secteur or '–' }} &nbsp;|&nbsp;
+      Budget : {{ '{:,.0f} €'.format(ao.budget_estime).replace(',', ' ') if ao.budget_estime else 'Non renseigné' }}
+    </div>
+    {% if result_view.policy_label and result_view.policy_label.text %}
+    <div class="result-sub text-tertiary" style="font-size:.78rem;margin-top:2px">Politique de scoring appliquée : {{ result_view.policy_label.text }}</div>
+    {% endif %}
+  </div>
+  <div class="result-score-block">
+    <span class="badge badge-{{ dec_class }}">{{ dec_icon }} {{ dec_label }}</span>
+    <div class="result-score" style="color:{{ 'var(--go)' if dec_class=='go' else ('var(--reserve)' if dec_class=='reserve' else ('var(--text-secondary)' if dec_class=='incomplete' else 'var(--nogo)')) }}">
+      {{ '%.1f' % result.score_global }}<span>/100</span>
+    </div>
+    {% if result.score_provisoire %}
+    {# Lot 44: some criteria were not evaluated — the figure is the sum of what could be computed, never a success probability. #}
+    <div class="result-score-sub"><strong>Score provisoire</strong> — critères non évalués</div>
+    {% endif %}
+    <div class="result-score-sub">Disponibilité équipe : {{ result.capacity.capacite_restante_pct if result.capacity else '–' }}%</div>
+  </div>
+</div>
+
+{% if dec == 'INCOMPLET' %}
+<div class="callout callout-info">
+  ❔ <strong>Analyse incomplète :</strong> une donnée de l'appel d'offres ou une règle de votre politique de scoring
+  manque — {{ result.scoring_missing_display() | join(', ') or 'élément non précisé' }}.
+  Le score affiché est provisoire : il est calculé à partir de ce qui a pu l'être, mais la décision GO/NO-GO
+  ne peut pas être établie tant que ces éléments ne sont pas renseignés — dans l'appel d'offres, ou dans
+  <a href="/app/parametres">Paramètres de scoring</a>. Ce n'est pas un rejet (NO-GO).
+</div>
+{% endif %}
+
+{# Lot 50 §4 — a SEPARATE indication from the INCOMPLET/scoring banner above: the documentary PERIMETER
+   received/analysed, independent of whether every business criterion could be evaluated. A dossier can be
+   scope-limited (categories not provided) and still reach GO/GO SOUS RÉSERVE/NO-GO if every criterion the
+   policy actually asks for was evaluable — this banner never claims an exhaustive validation of the market
+   either way, and is never merged with the INCOMPLET wording above. #}
+{% if dossier and dossier.perimetre_limite %}
+<div class="callout callout-info" id="dossier-scope-banner">
+  📄 <strong>Analyse limitée aux pièces fournies.</strong>
+  Pièces analysées : {{ dossier.pieces | selectattr('sera_pris_en_compte') | list | length }}/{{ dossier.pieces | length }}.
+  {% if dossier.categories_manquantes %}
+  Catégorie(s) non fournie(s) :
+  {%- for cat in dossier.categories_manquantes %} {{ category_labels.get(cat, cat) }}{{ ',' if not loop.last }}{% endfor %}.
+  {% endif %}
+  Le résultat ci-dessus ne porte que sur les pièces retenues — ce n'est pas une validation exhaustive du marché.
+</div>
+{% endif %}
+
+{% if result.enrichment_status and result.enrichment_status not in ('success', 'unknown') %}
+<div class="callout callout-warning">
+  ⚠️ <strong>Enrichissement IA indisponible pour cette analyse</strong>
+  {% if result.enrichment_reason == 'prompt_missing' %}
+  (modèle de prompt temporairement indisponible côté serveur).
+  {% elif result.enrichment_reason == 'llm_disabled' %}
+  (aucun fournisseur IA activé pour ce compte).
+  {% else %}
+  (justifications enrichies non générées).
+  {% endif %}
+  {# Lot 49 bis (DEFECT confirmé, RAPPORT_LOT_49.md §3) : ce bandeau affirmait que le score et la décision
+     "sont fiables" même pour un résultat INCOMPLET — seul ce libellé change ici, aucune note/décision/statut
+     n'est recalculé ni modifié. #}
+  Les justifications enrichies par l'IA ne sont pas disponibles. Les calculs utilisent les règles configurées
+  et les données disponibles{% if dec == 'INCOMPLET' %}, et le score reste provisoire tant que les informations
+  manquantes ne sont pas renseignées (voir ci-dessus){% endif %}.
+</div>
+{% endif %}
+
+{% if result.criteres_bloquants %}
+{% for b in result.criteres_bloquants %}
+<div class="callout callout-danger">🚨 <strong>Critère bloquant :</strong> {{ b }}</div>
+{% endfor %}
+{% endif %}
+
+{# Lot 49 — this analysis's place in a completion lineage, server-rendered (no extra round-trip needed to
+   know it). The parent's own result/deliverables are never re-shown here, only a link back to them. #}
+{% if parent_job_id %}
+<div class="callout callout-info">
+  ℹ️ Cette analyse <strong>complète</strong> une analyse précédente{% if parent_label %} (« {{ parent_label }} »){% endif %} —
+  <a href="/app/resultats/{{ parent_job_id }}">voir le résultat d'origine</a>. Ce nouveau résultat ne l'écrase pas.
+  {% if complements %}
+  Le score et la décision ci-dessus tiennent compte des informations déclarées par un utilisateur ci-dessous
+  (« Compléments déclarés ») — ces valeurs ne sont pas des données extraites ni vérifiées.
+  {% endif %}
+</div>
+{# Lot 53 — a compact before/after table for THIS revision: the exact `changes` apply_completion computed
+   at submission time (frozen on the result, never recomputed here), plus the criteria whose score/état
+   actually differ from the parent's own frozen result. Never claims one single change caused a score
+   variation when several entries changed at once — the table only lists what changed, on both sides. #}
+{% set rc = result.completion_changes %}
+{% if rc %}
+<div class="card" style="margin-top:12px">
+  <div class="section-heading"><h3>Ce qui a changé dans cette révision</h3></div>
+  <div class="table-wrap"><table class="data-table" aria-label="Changements de cette révision">
+    <thead><tr><th>Information</th><th>Valeur précédente</th><th>Valeur retenue</th><th>Origine</th></tr></thead>
+    <tbody>
+    {% for ch in rc %}
+      <tr>
+        <td>{{ ch.field }}</td>
+        <td>{{ 'Manquante' if ch.before is none else (ch.before | join(', ') if ch.before is not string and ch.before is iterable else ch.before) }}</td>
+        <td>{{ ch.after | join(', ') if ch.after is not string and ch.after is iterable else ch.after }}</td>
+        <td>{{ {'declared_user': 'Déclaré par vous', 'llm_sourced': 'Proposition acceptée (citation retrouvée)'}.get(ch.origin, ch.origin or '–') }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% if result_view.revision_diff and result_view.revision_diff.criteria_changed %}
+  <div class="section-heading" style="margin-top:16px"><h3>Décision et critères modifiés</h3></div>
+  <p style="font-size:.85rem">
+    Décision : <strong>{{ result_view.revision_diff.decision_before }}</strong> → <strong>{{ result_view.revision_diff.decision_after }}</strong>
+    &nbsp;|&nbsp; Score : {{ '%.1f' % result_view.revision_diff.score_before }} → {{ '%.1f' % result_view.revision_diff.score_after }}
+  </p>
+  <div class="table-wrap"><table class="data-table" aria-label="Critères modifiés">
+    <thead><tr><th>Critère</th><th>Avant</th><th>Après</th></tr></thead>
+    <tbody>
+    {% for d in result_view.revision_diff.criteria_changed %}
+      <tr>
+        <td>{{ d.nom }}</td>
+        <td>{{ 'Non évalué' if d.etat_before in ('manquant', None) and d.score_before is none else (d.etat_before if d.etat_before in ('non_applicable', 'hypothese') else ('%.0f/100' % d.score_before if d.score_before is not none else '–')) }}</td>
+        <td>{{ 'Non évalué' if d.etat_after in ('manquant', None) and d.score_after is none else (d.etat_after if d.etat_after in ('non_applicable', 'hypothese') else ('%.0f/100' % d.score_after if d.score_after is not none else '–')) }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  <p class="text-tertiary" style="font-size:.78rem;margin-top:8px">
+    Une capacité complétée seule n'implique pas, à elle seule, une décision GO — chaque critère garde sa propre règle.
+  </p>
+  {% endif %}
+</div>
+{% endif %}
+{% endif %}
+{% if revision_job_id %}
+<div class="callout callout-success">
+  ✓ Cette analyse a déjà été <strong>complétée</strong> par une révision plus récente —
+  <a href="/app/resultats/{{ revision_job_id }}">voir le résultat complété</a>.
+</div>
+{% endif %}
+
+{# Lot 50 bis §3 — a DIFFERENT lineage from the completion one above: a NEW documentary re-analysis (fresh
+   extraction/scoring) — never conflated with a frozen declarative revision in wording. Lot 54 §1 (DEFECT
+   confirmed): the wording used to say "en ajoutant des pièces" unconditionally, even when the dossier only
+   had a piece REMOVED with nothing added — origin_piece_change/extension_views.piece_change (computed by
+   comparing admitted-piece content hashes, never a filename) picks the honest phrasing instead. #}
+{% set piece_change_phrase = {
+  'pieces_ajoutees': 'en ajoutant des pièces à', 'pieces_retirees': 'en retirant des pièces de',
+  'pieces_modifiees': 'avec un dossier modifié (pièces ajoutées et retirées) par rapport à',
+  'dossier_inchange': 'avec le même dossier que',
+} %}
+{% set piece_change_short = {
+  'pieces_ajoutees': 'pièces ajoutées', 'pieces_retirees': 'pièces retirées',
+  'pieces_modifiees': 'pièces ajoutées et retirées', 'dossier_inchange': 'dossier inchangé',
+} %}
+{% if origin_job_id %}
+<div class="callout callout-info">
+  📎 Cette analyse est une <strong>nouvelle analyse documentaire</strong>, construite {{ piece_change_phrase.get(origin_piece_change, "à partir d'") }} une analyse précédente{% if origin_label %} (« {{ origin_label }} »){% endif %} —
+  <a href="/app/resultats/{{ origin_job_id }}">voir l'analyse d'origine</a>. Le calcul ci-dessus a été entièrement refait (nouvelle extraction, politique/profil/capacité actuels) — ce n'est pas un complément déclaratif.
+</div>
+{% endif %}
+{% if extension_views %}
+<div class="callout callout-success">
+  📎 Depuis cette analyse, {{ 'une nouvelle analyse documentaire a été produite' if extension_views | length == 1 else (extension_views | length ~ ' nouvelles analyses documentaires ont été produites') }} —
+  {% for ext in extension_views %}<a href="/app/resultats/{{ ext.job_id }}">voir{% if extension_views | length > 1 %} ({{ loop.index }}{% endif %} — {{ piece_change_short.get(ext.piece_change, 'dossier modifié') }}{% if extension_views | length > 1 %}){% endif %}</a>{% if not loop.last %}, {% endif %}{% endfor %}.
+</div>
+{% endif %}
+
+{# Lot 49 — populated by static/js/completion.js from GET /api/analyze/{job_id}/completion; hidden until
+   that call finds at least one actionable item, so the button never appears for an analysis that has
+   nothing useful to complete. Never shown at all when a revision already exists (banner above instead). #}
+{% if not revision_job_id %}
+<div id="completion-section" hidden>
+  <button class="btn btn-elevated" id="completion-open" type="button" style="margin-bottom:16px">🧩 Compléter les informations</button>
+  <div id="completion-panel" class="card" hidden>
+    <div class="section-heading"><h3>Compléter les informations de cette analyse</h3>
+      <button class="modal-close" id="completion-close" type="button" aria-label="Fermer">✕</button>
+    </div>
+    <p class="text-tertiary" style="font-size:.85rem">
+      Ces informations sont ce que <strong>vous</strong> déclarez — elles ne sont jamais présentées comme vérifiées.
+      Une correction de l'appel d'offres n'est jamais renvoyée dans votre profil ; une valeur de profil que vous
+      confirmez ici est enregistrée durablement, comme si vous l'aviez saisie dans Paramètres de scoring.
+    </p>
+    <div id="completion-needs"></div>
+    <div id="completion-capacity"></div>
+    <div id="completion-error" class="callout callout-danger" role="alert" tabindex="-1" hidden></div>
+    <div id="completion-status" class="text-tertiary" role="status" style="font-size:.85rem;min-height:1.2em"></div>
+    <button class="btn btn-primary btn-block" id="completion-submit" type="button" style="margin-top:12px">Recalculer avec ces informations</button>
+  </div>
+</div>
+{% endif %}
+
+{# Lot 50 bis §3 — distinct from "Compléter les informations" above: this starts a NEW documentary
+   re-analysis (fresh extraction/scoring), never a declarative revision. Only offered for a dossier-based
+   analysis (nothing to add pieces TO otherwise). #}
+{% if dossier %}
+<div style="margin-bottom:16px">
+  <a class="btn btn-secondary" href="/app/analyser?add_pieces_from={{ job_id }}">📎 Ajouter les pièces restantes (nouvelle analyse documentaire)</a>
+</div>
+{% endif %}
+
+<div data-tabs style="margin-top:24px">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="scoring">📊 Évaluation détaillée</button>
+    <button class="tab-btn" data-tab="contexte">📋 Contexte</button>
+    <button class="tab-btn" data-tab="references">🔍 Références &amp; preuves</button>
+    <button class="tab-btn" data-tab="client">🏢 Profil client</button>
+    <button class="tab-btn" data-tab="livrables">📦 Livrables</button>
+    <button class="tab-btn" data-tab="similaires">📈 AO similaires</button>
+  </div>
+
+  <!-- SCORING -->
+  <div class="tab-panel active" data-tab-panel="scoring">
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:24px;align-items:start">
+      <div class="card">
+        <div class="section-heading"><h3>Note par critère d'évaluation</h3></div>
+        {# Lot 44: a variable number of criteria, each in one of the states evalue / hypothese / manquant / non_applicable
+           (a result stored before lot 44 has no `etat`: it is displayed as a plain evaluated criterion, unchanged). #}
+        {% if not result.criteres %}<div class="score-justification">Aucun critère dans cette analyse.</div>{% endif %}
+        {% for c in result.criteres %}
+        {% if c.etat in ('manquant', 'non_applicable') %}
+        <div class="score-row" data-criterion-state="{{ c.etat }}">
+          <div class="score-head">
+            <span class="score-name">{{ c.nom }} <span class="score-weight">({{ c.poids | int }}%)</span></span>
+            <span class="score-value">{{ 'NON ÉVALUÉ' if c.etat == 'manquant' else 'NON APPLICABLE' }}</span>
+          </div>
+          <div class="score-track"></div>
+          <div class="score-justification">{{ c.justification }}</div>
+        </div>
+        {% else %}
+        {% set fillcls = 'high' if c.score >= 75 else ('mid' if c.score >= 55 else 'low') %}
+        <div class="score-row"{% if c.etat %} data-criterion-state="{{ c.etat }}"{% endif %}>
+          <div class="score-head">
+            <span class="score-name">{{ c.nom }} <span class="score-weight">({{ c.poids | int }}%)</span></span>
+            <span class="score-value">{{ '%.0f' % c.score }}/100{% if c.etat == 'hypothese' %} <em>(hypothèse de la politique)</em>{% endif %}</span>
+          </div>
+          <div class="score-track"><div class="score-fill {{ fillcls }}" style="width:{{ c.score }}%"></div></div>
+          <div class="score-justification">{{ c.justification }}</div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% if result.scoring_assumptions %}
+        <div class="callout callout-info" style="margin-top:12px">Hypothèses de la politique appliquées faute de donnée (non établies par l'appel d'offres) :
+          {% for a in result.scoring_assumptions %}<div>• {{ a }}</div>{% endfor %}</div>
+        {% endif %}
+      </div>
+      <div>
+        {% if result.forces %}
+        <div class="card card-tight" style="margin-bottom:16px">
+          <div class="section-heading"><h3>Points forts</h3></div>
+          {% for f in result.forces %}<div style="color:var(--go);font-size:.85rem;padding:.25rem 0">▶ {{ f }}</div>{% endfor %}
+        </div>
+        {% endif %}
+        {% if result.faiblesses %}
+        <div class="card card-tight" style="margin-bottom:16px">
+          <div class="section-heading"><h3>Points de vigilance</h3></div>
+          {% for f in result.faiblesses %}<div style="color:var(--nogo);font-size:.85rem;padding:.25rem 0">▶ {{ f }}</div>{% endfor %}
+        </div>
+        {% endif %}
+        {% if result.recommandations %}
+        <div class="card card-tight" style="margin-bottom:16px">
+          <div class="section-heading"><h3>Recommandations</h3></div>
+          {% for r in result.recommandations %}<div class="callout callout-info">💡 {{ r }}</div>{% endfor %}
+        </div>
+        {% endif %}
+        {% if result.risques %}
+        <div class="card card-tight">
+          <div class="section-heading"><h3>Risques identifiés</h3></div>
+          {% for r in result.risques %}<div class="callout callout-warning">⚠️ {{ r }}</div>{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXTE -->
+  <div class="tab-panel" data-tab-panel="contexte">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div class="card">
+        <div class="section-heading"><h3>Informations générales</h3></div>
+        {% for label, val in [
+          ('Titre', ao.titre), ('Client', ao.client), ('Secteur', ao.secteur or '–'),
+          ('Budget estimé', ('{:,.0f} €'.format(ao.budget_estime).replace(',', ' ') if ao.budget_estime else 'Non renseigné')),
+          ('Durée projet', ((ao.duree_projet_mois ~ ' mois') if ao.duree_projet_mois else '–')),
+          ('Date limite de réponse', ao.deadline_reponse or '–')
+        ] %}
+        <div style="margin-bottom:12px"><span class="text-tertiary" style="font-size:.8rem">{{ label }}</span><br><span>{{ val }}</span></div>
+        {% endfor %}
+      </div>
+      <div class="card">
+        <div class="section-heading"><h3>Technologies &amp; compétences</h3></div>
+        {% set techs = (ao.technologies_demandees + ao.competences_requises) | unique | list %}
+        {% if techs %}
+        <div>{% for t in techs %}<span class="chip" style="margin:0 6px 6px 0;display:inline-flex">{{ t }}</span>{% endfor %}</div>
+        {% else %}<p class="text-tertiary">Aucune technologie identifiée</p>{% endif %}
+
+        <div class="section-heading" style="margin-top:20px"><h3>Certifications obligatoires</h3></div>
+        {% if ao.certifications_obligatoires %}
+          {% for cert in ao.certifications_obligatoires %}
+          {% set ok = cert.lower() in ['iso 27001','rgpd','qualiopi','iso27001'] %}
+          <div style="color:{{ 'var(--go)' if ok else 'var(--nogo)' }};font-size:.85rem;padding:.15rem 0">{{ '✓' if ok else '✗' }} {{ cert }}</div>
+          {% endfor %}
+        {% else %}<p class="text-tertiary">Aucune certification obligatoire détectée</p>{% endif %}
+      </div>
+    </div>
+
+    {# Lot 49 — what the user DECLARED to produce this specific revision (subject, field, value, author, date) —
+       distinct from every extracted/observed value above and from the dossier's own sourced observations below. #}
+    {% if complements %}
+    <div class="card" style="margin-top:20px">
+      <div class="section-heading"><h3>Compléments déclarés pour cette analyse</h3></div>
+      <p class="text-tertiary" style="font-size:.8rem">
+        Ces valeurs n'ont jamais été vérifiées de façon indépendante — une origine « citation retrouvée »
+        signifie qu'un passage de vos documents la mentionne, jamais qu'elle a été confirmée par un tiers.
+      </p>
+      <div class="table-wrap"><table class="data-table" aria-label="Compléments déclarés">
+        <thead><tr><th>Sujet</th><th>Information</th><th>Valeur retenue</th><th>Origine</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for c in result_view.complements %}
+          <tr>
+            <td>{{ {'ao': "Appel d'offres", 'acheteur': 'Acheteur', 'prestataire': 'Votre profil', 'capacite': 'Capacité'}.get(c.subject, c.subject) }}</td>
+            <td>{{ c.field_label }}</td>
+            <td>{{ c.value_json | join(', ') if c.value_json is not string and c.value_json is iterable else c.value_json }}{% if c.unit %} {{ c.unit }}{% endif %}</td>
+            <td>
+              {{ c.origin_label }}
+              {% if c.citation %}<br><span class="text-tertiary" style="font-size:.78rem">« {{ c.citation }} »{% if c.source_label %} — {{ c.source_label }}{% endif %}</span>{% endif %}
+            </td>
+            <td>{{ c.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+    {% endif %}
+
+    {# Lot 47 bis — the pieces this ONE analysis was built from, and where each fact was read. No internal path is ever
+       shown: only the safe display name, the category chosen by the user, and the passage that was analysed. #}
+    {% if dossier %}
+    {% set field_labels = {'budget_estime': 'Budget estimé', 'duree_projet_mois': 'Durée du projet (mois)', 'deadline_reponse': 'Date limite de réponse',
+                           'titre': 'Titre', 'client': 'Client', 'secteur': 'Secteur', 'certifications_obligatoires': 'Certification obligatoire'} %}
+    {% macro shown_value(o) -%}
+      {%- if o.champ == 'budget_estime' and o.valeur is number -%}{{ '{:,.0f} €'.format(o.valeur).replace(',', ' ') }}
+      {%- elif o.valeur is not string and o.valeur is iterable -%}{{ o.valeur | join(', ') }}
+      {%- elif o.valeur is sameas true -%}oui{%- elif o.valeur is sameas false -%}non
+      {%- elif o.valeur is number and o.valeur == o.valeur | int -%}{{ o.valeur | int }}{% if o.unite %} {{ o.unite }}{% endif %}
+      {%- else -%}{{ o.valeur }}{% if o.unite %} {{ o.unite }}{% endif %}{%- endif -%}
+    {%- endmacro %}
+    {% macro passage(src) -%}
+      {{ src.categorie_libelle }} — {{ src.nom }}{% if src.passage and src.passage.pages %}, page{{ 's' if src.passage.pages[0] != src.passage.pages[1] else '' }} {{ src.passage.pages[0] }}{% if src.passage.pages[0] != src.passage.pages[1] %}–{{ src.passage.pages[1] }}{% endif %}{% endif %}{% if src.passage %} (passage {{ src.passage.fenetre }}/{{ src.passage.sur }}){% endif %}
+    {%- endmacro %}
+    <div class="card" id="dossier-result" style="margin-top:20px">
+      <div class="section-heading"><h3>Dossier d'appel d'offres — {{ dossier.nombre_pieces }} pièce{{ 's' if dossier.nombre_pieces > 1 else '' }}, {{ dossier.taille_totale }}</h3></div>
+      <p class="text-tertiary" style="font-size:.8rem">Une seule analyse, consolidée sur l'ensemble des pièces. Ces pièces sont l'appel d'offres : elles ne sont pas des références de votre base de connaissances.</p>
+      <div class="table-wrap"><table class="data-table" aria-label="Pièces du dossier">
+        <thead><tr><th>Catégorie</th><th>Pièce</th><th>Format</th><th>Taille</th><th>Pages</th><th>Prise en compte</th></tr></thead>
+        <tbody>
+        {% for p in dossier.pieces %}
+          <tr{% if p.sera_pris_en_compte is defined and not p.sera_pris_en_compte %} class="dossier-piece-excluded"{% endif %}>
+            <td>{{ p.categorie_finale and category_labels.get(p.categorie_finale, p.categorie_finale) or p.categorie_libelle }}</td>
+            <td>{{ p.nom }}{% if p.doublon_de %} <span class="chip">doublon de « {{ p.doublon_de_nom or 'autre pièce' }} » — non compté deux fois</span>{% endif %}</td>
+            <td>{{ p.format | upper }}</td><td>{{ p.taille }}</td><td>{{ p.pages or '–' }}</td>
+            <td>
+              {% if p.sera_pris_en_compte is not defined %}—{# lot 49 bis and earlier: no manifest field on this old row #}
+              {% elif p.sera_pris_en_compte %}✓ Retenue{% if p.pertinence %} ({{ {'lie': 'liée', 'incertain': 'incertaine, confirmée'}.get(p.pertinence, p.pertinence) }}){% endif %}
+              {% else %}✗ Exclue{% if p.raison_exclusion %} — {{ p.raison_exclusion }}{% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+      {% if dossier.pieces | selectattr('sera_pris_en_compte', 'defined') | rejectattr('sera_pris_en_compte') | list %}
+      <p class="text-tertiary" style="font-size:.8rem;margin-top:8px">
+        Les pièces exclues ci-dessus n'ont fourni aucune information à ce résultat — elles restent listées pour la traçabilité de ce qui a été reçu et écarté.
+      </p>
+      {% endif %}
+
+      {% if dossier.conflits %}
+      <div class="section-heading" style="margin-top:20px"><h3>Valeurs contradictoires entre les pièces</h3></div>
+      {% for c in dossier.conflits %}
+      <div class="callout callout-warning" data-conflict="{{ c.champ }}">
+        <strong>{{ c.libelle or field_labels.get(c.champ, c.champ) }}</strong> — {{ c.resolution }}
+        <ul style="margin:6px 0 0 18px">
+        {% for v in c.valeurs %}
+          <li>{{ shown_value({'champ': c.champ, 'valeur': v.valeur, 'unite': v.unite}) }}{% if v.sources %} — {% for s in v.sources %}{{ passage(s) }}{{ '; ' if not loop.last }}{% endfor %}{% endif %}</li>
+        {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      {% if dossier.observations %}
+      <div class="section-heading" style="margin-top:20px"><h3>Provenance des informations relevées</h3></div>
+      <div class="table-wrap"><table class="data-table" aria-label="Provenance des informations">
+        <thead><tr><th>Information</th><th>Valeur relevée</th><th>Source</th></tr></thead>
+        <tbody>
+        {# titre / client / secteur are display data (recorded in the result, never a scoring input): not listed here #}
+        {% for o in dossier.observations if o.champ not in ('titre', 'client', 'secteur') %}
+          <tr>
+            <td>{{ o.libelle or field_labels.get(o.champ, o.champ) }}</td>
+            <td>{{ shown_value(o) }}</td>
+            <td>{{ passage(o.source) }}{% for s in o.autres_sources %}<br>{{ passage(s) }}{% endfor %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+      {% endif %}
+
+      <details style="margin-top:14px"><summary>Limites de cette lecture</summary>
+        <ul style="margin:6px 0 0 18px;font-size:.83rem">{% for note in dossier.limites %}<li>{{ note }}</li>{% endfor %}</ul>
+      </details>
+    </div>
+    {% endif %}
+
+    {% if ao.contraintes %}
+    <div class="card" style="margin-top:20px">
+      <div class="section-heading"><h3>Contraintes identifiées</h3></div>
+      {% for c in ao.contraintes %}<div class="callout callout-warning">⚡ {{ c }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    {% if ao.livrables %}
+    <div class="card" style="margin-top:20px">
+      <div class="section-heading"><h3>Livrables demandés</h3></div>
+      {% for lv in ao.livrables %}<div style="padding:.2rem 0;font-size:.85rem">📎 {{ lv }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    {% if ao.questions_client %}
+    <div class="card" style="margin-top:20px">
+      <div class="section-heading"><h3>Questions identifiées</h3></div>
+      {% for q in ao.questions_client[:10] %}<div class="text-secondary" style="font-size:.83rem;padding:.2rem 0"><span style="color:var(--primary-strong)">Q{{ loop.index }}</span> {{ q }}</div>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- REFERENCES -->
+  <div class="tab-panel" data-tab-panel="references">
+    <div class="section-heading"><h3>{{ result_view.reference_count }} référence{{ 's' if result_view.reference_count != 1 else '' }} distincte{{ 's' if result_view.reference_count != 1 else '' }} trouvée{{ 's' if result_view.reference_count != 1 else '' }}</h3></div>
+    {% if result_view.reference_passage_count != result_view.reference_count %}
+    <p class="text-tertiary" style="font-size:.8rem;margin-top:-8px;margin-bottom:16px">
+      {{ result_view.reference_passage_count }} passage{{ 's' if result_view.reference_passage_count != 1 else '' }} consulté{{ 's' if result_view.reference_passage_count != 1 else '' }} au total — plusieurs passages d'un même document comptent pour une seule référence.
+    </p>
+    {% endif %}
+    {% if result.rag_synthesis %}
+    <div class="callout callout-success" style="margin-bottom:20px">
+      <div class="eyebrow" style="color:var(--go);margin-bottom:8px">🤖 Analyse IA des références</div>
+      {{ result.rag_synthesis }}
+    </div>
+    {% endif %}
+    {% if result.evidence_pack %}
+      {% for ev in result.evidence_pack[:8] %}
+      {% set pct = [((ev.score * 400) | int), 100] | min %}
+      {% set fillcls = 'high' if pct >= 60 else ('mid' if pct >= 30 else 'low') %}
+      <details class="card card-tight" style="margin-bottom:12px">
+        <summary style="cursor:pointer;font-weight:600">📄 {{ ev.source }} — pertinence : {{ pct }}%</summary>
+        <div class="score-track" style="margin:12px 0"><div class="score-fill {{ fillcls }}" style="width:{{ pct }}%"></div></div>
+        <p class="text-secondary" style="font-size:.85rem;white-space:pre-wrap">{{ ev.content[:1400] }}</p>
+      </details>
+      {% endfor %}
+    {% else %}<p class="text-tertiary">Aucune référence trouvée — vérifiez que les documents de la base sont bien chargés.</p>{% endif %}
+  </div>
+
+  <!-- CLIENT -->
+  <div class="tab-panel" data-tab-panel="client">
+    {% if result.company_profile %}
+    {% set cp = result.company_profile %}
+    <div class="card">
+      <div class="section-heading"><h3>Profil entreprise cliente</h3></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          {% for label, val in [('Raison sociale', cp.raison_sociale), ('SIRET', cp.siret or '–'), ('Effectif', cp.effectif), ('Chiffre d\'affaires', cp.ca)] %}
+          <div style="margin-bottom:12px"><span class="text-tertiary" style="font-size:.8rem">{{ label }}</span><br><span>{{ val }}</span></div>
+          {% endfor %}
+        </div>
+        <div>
+          {% for label, val in [('Ville', cp.ville), ('Secteur', cp.secteur), ('Ancienneté', cp.anciennete), ('Solidité financière', cp.solidite_financiere)] %}
+          <div style="margin-bottom:12px"><span class="text-tertiary" style="font-size:.8rem">{{ label }}</span><br><span>{{ val }}</span></div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="text-tertiary" style="font-size:.75rem;margin-top:8px">Source données : <span style="color:var(--primary-strong)">{{ cp.source }}</span></div>
+    </div>
+
+    {% if result.capacity %}
+    <div class="card" style="margin-top:20px">
+      <div class="section-heading"><h3>Disponibilité et capacité de l'équipe</h3></div>
+      <div class="kpi-grid">
+        <div class="kpi-tile"><div class="kpi-label">Charge actuelle</div><div class="kpi-value">{{ result.capacity.charge_actuelle_pct }}%</div></div>
+        <div class="kpi-tile go"><div class="kpi-label">Disponibilité restante</div><div class="kpi-value">{{ result.capacity.capacite_restante_pct }}%</div></div>
+        <div class="kpi-tile {{ '' if result.capacity.equipe_disponible else 'nogo' }}"><div class="kpi-label">Équipe disponible</div><div class="kpi-value" style="font-size:1.1rem">{{ '✅ Oui' if result.capacity.equipe_disponible else '❌ Non' }}</div></div>
+      </div>
+      <p class="text-tertiary" style="margin-top:14px;font-size:.85rem">{{ result.capacity.commentaire }}</p>
+    </div>
+    {% endif %}
+    {% else %}<p class="text-tertiary">Profil client indisponible.</p>{% endif %}
+  </div>
+
+  <!-- LIVRABLES -->
+  <div class="tab-panel" data-tab-panel="livrables">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div class="card deliverable-card">
+        <div class="deliverable-icon">📋</div>
+        <h3>Rapport de décision</h3>
+        <div class="deliverable-desc">PDF · Note globale · Points bloquants · Atouts et faiblesses</div>
+        <div class="text-tertiary" id="doc-pdf-status" style="font-size:.8rem;margin:10px 0">Vérification de la disponibilité…</div>
+        <div class="callout callout-danger" id="doc-pdf-error" style="font-size:.8rem" hidden></div>
+        <a class="btn btn-primary btn-block" id="doc-pdf-download" href="/api/download/{{ job_id }}/pdf" hidden>⬇️ Télécharger le PDF</a>
+        <button class="btn btn-secondary btn-block" id="doc-pdf-regenerate" type="button" style="margin-top:8px" hidden>↻ Régénérer depuis l'analyse enregistrée</button>
+      </div>
+      <div class="card deliverable-card">
+        <div class="deliverable-icon">📝</div>
+        {% if dec == 'INCOMPLET' %}
+        <h3>Document provisoire</h3>
+        <div class="deliverable-desc">DOCX · Basé sur une analyse incomplète — complétez votre configuration avant de vous en servir pour répondre</div>
+        {% elif dec == 'NO-GO' %}
+        <h3>Mémo de non-réponse</h3>
+        <div class="deliverable-desc">DOCX · Analyse des blocages · Risques · Conditions de reconsidération</div>
+        {% elif 'RESERVE' in dec %}
+        <h3>Dossier conditionnel</h3>
+        <div class="deliverable-desc">DOCX · Réserves et conditions · Plan d'action GO · Méthodologie</div>
+        {% else %}
+        <h3>Dossier de candidature</h3>
+        <div class="deliverable-desc">DOCX · Réponse complète · Références · Méthodologie</div>
+        {% endif %}
+        <div class="text-tertiary" id="doc-docx-status" style="font-size:.8rem;margin:10px 0">Vérification de la disponibilité…</div>
+        <div class="callout callout-danger" id="doc-docx-error" style="font-size:.8rem" hidden></div>
+        <a class="btn btn-primary btn-block" id="doc-docx-download" href="/api/download/{{ job_id }}/docx" hidden>⬇️ Télécharger le DOCX</a>
+        <button class="btn btn-secondary btn-block" id="doc-docx-regenerate" type="button" style="margin-top:8px" hidden>↻ Régénérer depuis l'analyse enregistrée</button>
+      </div>
+    </div>
+    <p class="text-tertiary" style="font-size:.78rem;margin-top:14px">
+      La régénération recompose le document à partir du résultat déjà enregistré — elle ne relance
+      ni le scoring ni l'enrichissement IA, et ne peut jamais changer le score ou la décision ci-dessus.
+    </p>
+  </div>
+
+  <!-- SIMILAIRES -->
+  <div class="tab-panel" data-tab-panel="similaires">
+    <div class="section-heading"><h3>Historique des appels d'offres analysés</h3></div>
+    {% if history_recent %}
+      {% for h in history_recent %}
+      {% set hcls = 'go' if h.decision == 'GO' else ('reserve' if 'RESERVE' in (h.decision or '') else ('incomplete' if h.decision == 'INCOMPLET' else 'nogo')) %}
+      <div class="list-row">
+        <div>
+          <div class="list-row-title">{{ h.titre or '–' }}</div>
+          <div class="list-row-meta">{{ h.client or '–' }} · {{ h.date or '–' }} · {{ (h.techs or []) | join(', ') or '–' }}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge badge-{{ hcls }}" style="font-size:.7rem;padding:.2rem .6rem">{{ h.decision }}</span>
+          <div class="font-mono text-tertiary" style="margin-top:6px">{{ h.score }}/100</div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}<p class="text-tertiary">Aucun appel d'offres dans l'historique pour le moment.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block app_extra_scripts %}
+<script>window.WM_JOB_ID = {{ job_id | tojson }}; window.WM_HAS_REVISION = {{ (revision_job_id is not none) | tojson }};</script>
+<script src="/static/js/result.js?v={{ asset_version('js/result.js') }}"></script>
+<script src="/static/js/completion.js?v={{ asset_version('js/completion.js') }}"></script>
+{% endblock %}

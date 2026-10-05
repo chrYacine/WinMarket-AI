@@ -1,0 +1,3 @@
+```json
+{"zone_intervention": {"value": ["Lyon", "Marseille"], "unit": null, "found": true}, "frequence_nettoyage": {"value": 4, "unit": "par semaine", "found": true}, "travail_de_nuit": {"value": false, "unit": null, "found": true}}
+```

@@ -1,0 +1,16 @@
+{% extends "app_shell.html" %}
+{% block title %}{{ title or "Erreur" }} — WinMarket AI{% endblock %}
+
+{% block app_content %}
+<div class="page-title">{{ title or "Une erreur est survenue" }}</div>
+<div class="card" style="margin-top:20px">
+  <div class="error-card">
+    <span>⚠️</span>
+    <div>
+      <strong>{{ heading or "Impossible d'afficher cette page." }}</strong>
+      <p style="margin-top:8px;font-size:.9rem">{{ message }}</p>
+    </div>
+  </div>
+  <a class="btn btn-secondary" href="/app/analyser" style="margin-top:16px">← Nouvelle analyse</a>
+</div>
+{% endblock %}

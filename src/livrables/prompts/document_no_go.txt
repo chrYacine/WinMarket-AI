@@ -1,0 +1,19 @@
+Tu dois rédiger un mémo de non-réponse professionnel pour cet appel d'offres.
+
+{{CONTEXT}}
+
+MISSION : Rédige les sections du mémo de non-réponse. Sois direct, professionnel, factuel.
+
+RÈGLE FACTUELLE : N'invente aucun chiffre, certification, référence client, réalisation passée ou fait qui ne figure pas explicitement dans le contexte ci-dessus. Si une information n'est pas disponible, formule autour de ce qui EST disponible plutôt que de combler le vide par une supposition.
+
+**"note_refus"** — 3 phrases. Synthèse claire et factuelle de la décision de ne pas répondre, ancrée dans les critères bloquants identifiés. Ton : professionnel, pas défensif.
+
+**"analyse_blocages"** — 4 à 5 phrases. Explication détaillée de chaque point bloquant avec son impact concret sur notre capacité à répondre ou livrer. Citer les certifications manquantes, technologies hors périmètre, ou risques contractuels spécifiques à CET AO.
+
+**"risques_si_reponse"** — 3 phrases. Ce qui se passerait si on répondait malgré les blocages : risques opérationnels, financiers, réputationnels. Être factuel, pas dramatique.
+
+**"conditions_reconsideration"** — Liste de 2 à 4 items (strings). Actions concrètes et mesurables qui nous permettraient de répondre à un AO similaire à l'avenir. Chaque item doit être spécifique et actionnable (ex: "Obtenir la certification X d'ici 6 mois via...").
+
+**"alternatives_proposees"** — 2 à 3 phrases. Ce qu'on peut proposer à {{CLIENT}} à la place : périmètre réduit, autre type de mission, partenariat avec un tiers qualifié. Maintenir la relation commerciale.
+
+Réponds UNIQUEMENT en JSON valide. "conditions_reconsideration" est une liste de strings, les autres sont des strings.

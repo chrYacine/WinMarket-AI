@@ -1,0 +1,24 @@
+{
+  "_comment": "Synthetic scenario (test data only). No real customer, buyer or provider. Fixed BEFORE any provider call.",
+  "model": "claude-sonnet-4-6",
+  "ao_text": "AVIS DE CONSULTATION (SYNTHÉTIQUE) — Prestations de nettoyage de locaux administratifs\nPouvoir adjudicateur : Communauté d'agglomération Exemple (entité fictive).\nObjet : le titulaire assurera le nettoyage courant des bureaux des sites de Lyon et de Marseille. Les deux sites sont obligatoires : une offre qui ne couvre pas les deux lieux d'exécution sera écartée.\nFréquence exigée : quatre interventions par semaine sur chacun des sites.\nHoraires : les interventions ont lieu en journée. Le travail de nuit n'est pas requis.\nDurée du marché : 24 mois. Budget estimé : 120 000 € HT.",
+  "provider_business_facts": {
+    "zone_intervention": {"key": "zone_intervention", "label": "Sites d'intervention", "type": "list", "unit": null, "value": ["Lyon"]},
+    "frequence_nettoyage": {"key": "frequence_nettoyage", "label": "Fréquence d'intervention", "type": "number", "unit": "par_semaine", "value": 3},
+    "travail_de_nuit": {"key": "travail_de_nuit", "label": "Travail de nuit", "type": "boolean", "unit": null, "value": false}
+  },
+  "custom_criteria": [
+    {"id": "zone_couverte", "label": "Sites couverts", "fact_key": "zone_intervention", "operator": "list_coverage", "weight": 8, "blocking": true, "pass_score": 100, "fail_score": 0},
+    {"id": "frequence_ok", "label": "Fréquence compatible", "fact_key": "frequence_nettoyage", "operator": "numeric_threshold", "comparison": "provider_gte_ao", "weight": 5, "blocking": false, "pass_score": 100, "fail_score": 20},
+    {"id": "nuit_ok", "label": "Travail de nuit cohérent", "fact_key": "travail_de_nuit", "operator": "equality", "weight": 2, "blocking": false, "pass_score": 100, "fail_score": 0}
+  ],
+  "fixed_weights": {
+    "Adequation expertise": 0, "References similaires": 10, "Disponibilite equipe": 15, "Rentabilite estimee": 15,
+    "Faisabilite delai": 10, "Certifications requises": 10, "Complexite technique": 0, "Connaissance secteur": 10,
+    "Potentiel commercial": 5, "Risque contractuel": 5, "Solidite client": 5, "Valeur strategique": 0
+  },
+  "threshold_go": 80,
+  "threshold_sous_reserve": 55,
+  "business_rules": {"budget_minimum_eur": 0, "max_charge_pct": 100, "max_unmastered_technologies": 999, "certification_penalty_score": 20},
+  "capacity": {"charge_actuelle_pct": 40, "capacite_restante_pct": 60, "equipe_disponible": true, "commentaire": "Capacité de test."}
+}

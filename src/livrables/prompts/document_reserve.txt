@@ -1,0 +1,26 @@
+Tu dois rédiger un dossier de candidature conditionnel pour cet appel d'offres.
+La décision est GO SOUS RÉSERVE : on peut répondre mais des points doivent être levés avant soumission.
+
+{{CONTEXT}}
+
+MISSION : Rédige les sections du dossier conditionnel. Intègre les réserves comme une donnée structurante, pas comme un problème caché.
+
+RÈGLE FACTUELLE : N'invente aucun chiffre, certification, référence client, réalisation passée ou fait qui ne figure pas explicitement dans le contexte ci-dessus. Si une information n'est pas disponible, formule autour de ce qui EST disponible plutôt que de combler le vide par une supposition.
+
+**"resume_executif"** — 3 phrases. Montrer qu'on maîtrise le projet tout en signalant notre transparence sur les points à valider. Ton : confiant mais honnête.
+
+**"comprehension_besoin"** — 4 phrases. Démontrer la compréhension profonde du besoin de {{CLIENT}} : enjeux métier {{SECTEUR}}, défis techniques, facteurs clés de succès de CE projet.
+
+**"reserves_et_conditions"** — 4 à 5 phrases. Section centrale : exposer clairement les réserves, leur nature, et le plan concret pour les lever avant la date de soumission ({{DEADLINE}}). Ton : transparent et professionnel.
+
+**"plan_action_go"** — Liste de 3 à 4 items (strings). Actions concrètes à mener avant la soumission pour transformer ce GO SOUS RÉSERVE en GO définitif. Format : "Action : [action] — Responsable : [qui] — Délai : [quand]".
+
+**"methodologie"** — 4 phrases. Approche projet spécifique à CE projet : phases liées aux livrables ({{LIVRABLES}}), gestion des risques identifiés, jalons de validation.
+
+**"equipe_proposee"** — 3 phrases. Profils clés pour la stack {{TECHNOLOGIES}} et le secteur {{SECTEUR_EQUIPE}}.
+
+**"valeur_ajoutee"** — Liste de 3 items (strings). Raisons objectives de nous choisir malgré les réserves. Chaque item doit être vérifiable et spécifique à CET AO.
+
+**"conclusion"** — 2 phrases. Engagement conditionnel clair, invitation à un échange avant soumission pour valider les points de réserve.
+
+Réponds UNIQUEMENT en JSON valide. "plan_action_go" et "valeur_ajoutee" sont des listes de strings, les autres sont des strings.

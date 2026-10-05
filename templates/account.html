@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block title %}Mon compte — WinMarket AI{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/landing.css?v={{ asset_version('css/landing.css') }}">{% endblock %}
+
+{% block body %}
+{% include "components/site_header.html" %}
+
+{% set status_labels = {'active': 'Actif', 'pending': 'En attente de validation', 'rejected': 'Refusé', 'disabled': 'Désactivé'} %}
+
+<main id="main-content">
+  <section class="section" style="padding-top: calc(var(--header-height) + var(--space-8))">
+    <div class="container" style="max-width: 560px">
+      <div class="section-intro" style="margin-inline: auto; text-align: center">
+        <span class="eyebrow">Mon compte</span>
+        <h1 style="font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.25rem)">{{ user.full_name }}</h1>
+        <p>{{ user.email }}</p>
+      </div>
+
+      <div class="kpi-grid" style="margin-top:28px;margin-bottom:24px">
+        <div class="kpi-tile {{ 'go' if subscription and subscription.status == 'active' else '' }}">
+          <div class="kpi-label">Offre</div>
+          <div class="kpi-value" style="font-size:1.1rem">{{ subscription.plan|capitalize if subscription else '–' }}</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-label">Statut du compte</div>
+          <div class="kpi-value" style="font-size:1.1rem">{{ status_labels.get(user.status, user.status) }}</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-label">Membre depuis</div>
+          <div class="kpi-value" style="font-size:1.1rem">{{ user.created_at.strftime('%d/%m/%Y') }}</div>
+        </div>
+      </div>
+
+      {% if subscription and subscription.access_origin == 'manual_without_payment' %}
+      <div class="callout callout-info" style="margin-bottom:20px">
+        <strong>Activation manuelle sans paiement</strong>
+        <p>Accès : {{ subscription.status }}.
+        Échéance UTC : {{ subscription.expires_at.strftime('%d/%m/%Y %H:%M') if subscription.expires_at else 'non accordée' }}.
+        Quota par activation : {{ subscription.max_analyses if subscription.max_analyses else 'non accordé' }} analyses, révisions comprises.</p>
+      </div>
+      {% endif %}
+      <div class="card">
+        {% if saved %}
+        <div class="callout callout-success" style="margin-bottom:20px">Vos informations ont été mises à jour.</div>
+        {% endif %}
+
+        <form method="post" action="/account">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field">
+              <label for="acc-first-name">Prénom</label>
+              <input class="input" type="text" id="acc-first-name" name="first_name" value="{{ user.first_name }}" required>
+            </div>
+            <div class="field">
+              <label for="acc-last-name">Nom</label>
+              <input class="input" type="text" id="acc-last-name" name="last_name" value="{{ user.last_name }}" required>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field">
+              <label for="acc-company">Société</label>
+              <input class="input" type="text" id="acc-company" name="company" value="{{ user.company or '' }}">
+            </div>
+            <div class="field">
+              <label for="acc-job-title">Fonction</label>
+              <input class="input" type="text" id="acc-job-title" name="job_title" value="{{ user.job_title or '' }}">
+            </div>
+          </div>
+          <div class="field">
+            <label for="acc-phone">Téléphone</label>
+            <input class="input" type="tel" id="acc-phone" name="phone" value="{{ user.phone or '' }}">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
+        </form>
+
+        <div class="divider"></div>
+        <form method="post" action="/logout">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit" class="btn btn-secondary btn-block">Déconnexion</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% include "components/site_footer.html" %}
+{% endblock %}

@@ -1,0 +1,152 @@
+/* ==========================================================================
+   WinMarket AI — Application shell
+   ========================================================================== */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.app-sidebar {
+  background: var(--background-soft);
+  border-right: 1px solid var(--border);
+  padding: var(--space-5) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.app-sidebar .brand {
+  padding: var(--space-2) var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-account {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); box-shadow: var(--shadow-sm);
+}
+.sidebar-account-name { font-weight: 700; font-size: var(--fs-sm); color: var(--text-primary); }
+.sidebar-account-email {
+  font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sidebar-account-links { display: flex; gap: var(--space-3); margin-top: var(--space-3); }
+.sidebar-account-links a { font-size: var(--fs-xs); color: var(--primary-strong); font-weight: 600; }
+.sidebar-account-links a:hover { text-decoration: underline; }
+.sidebar-logout {
+  display: block; width: 100%; margin-top: var(--space-3); padding-top: var(--space-3);
+  border: none; border-top: 1px solid var(--border-soft); background: none;
+  text-align: left; font-size: var(--fs-xs); color: var(--text-tertiary); cursor: pointer; font-family: inherit;
+}
+.sidebar-logout:hover { color: var(--nogo); }
+
+.sidebar-org-switcher { margin-bottom: var(--space-4); }
+.sidebar-org-switcher select {
+  width: 100%; padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  background: var(--surface); color: var(--text-primary);
+  font-size: var(--fs-sm); font-family: inherit; cursor: pointer;
+}
+
+.sidebar-nav { display: flex; flex-direction: column; gap: var(--space-1); }
+.sidebar-link {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+.sidebar-link:hover { background: var(--surface); color: var(--text-primary); border-color: var(--border); }
+.sidebar-link.active { background: var(--primary-soft); color: var(--primary-strong); border-color: var(--primary-border); }
+
+.sidebar-footer { margin-top: auto; padding-top: var(--space-5); border-top: 1px solid var(--border); }
+.sidebar-panel-title {
+  font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-tertiary); padding: 0 var(--space-2); margin-bottom: var(--space-3);
+}
+.sidebar-total {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4); margin-bottom: var(--space-3); box-shadow: var(--shadow-sm);
+}
+.sidebar-total .kpi-value { font-size: 1.6rem; margin-top: 2px; }
+.sidebar-stat-list {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-1) var(--space-4); box-shadow: var(--shadow-sm);
+}
+.sidebar-stat {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.55rem 0; font-size: var(--fs-sm); color: var(--text-secondary);
+}
+.sidebar-stat + .sidebar-stat { border-top: 1px solid var(--border-soft); }
+.sidebar-stat-label { display: flex; align-items: center; gap: var(--space-2); }
+.sidebar-stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sidebar-stat-dot.go { background: var(--go); }
+.sidebar-stat-dot.reserve { background: var(--reserve); }
+.sidebar-stat-dot.nogo { background: var(--nogo); }
+.sidebar-stat-value { font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); }
+.sidebar-back { display: block; margin-top: var(--space-4); padding: 0 var(--space-2); font-size: var(--fs-xs); color: var(--text-tertiary); }
+.sidebar-back:hover { color: var(--text-primary); }
+
+/* ── Main area ── */
+.app-main { padding: var(--space-7) var(--space-7) var(--space-9); max-width: 1180px; min-width: 0; }
+.app-topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-5); margin-bottom: var(--space-6); flex-wrap: wrap; }
+.breadcrumb { font-size: var(--fs-xs); color: var(--text-tertiary); margin-bottom: var(--space-2); }
+.breadcrumb a:hover { color: var(--text-secondary); }
+.page-title { font-size: var(--fs-h2); }
+/* Lot 47: a subtitle is read in full (it used to be cut with an ellipsis on one line — unreadable on a phone). */
+.page-subtitle { margin: var(--space-2) 0 var(--space-6); color: var(--text-secondary); }
+
+/* ── Source mode ── */
+.source-modes { margin-bottom: var(--space-5); }
+
+/* ── Progress panel ── */
+.progress-panel { text-align: center; padding: var(--space-8) var(--space-5); }
+.progress-panel .spinner { margin: 0 auto var(--space-5); width: 34px; height: 34px; border-width: 3px; }
+.progress-message { font-size: var(--fs-body-lg); font-weight: 600; margin-bottom: var(--space-6); min-height: 1.6em; }
+.progress-bar-track { height: 6px; background: var(--surface-2); border-radius: var(--radius-full); overflow: hidden; margin: var(--space-6) auto 0; max-width: 480px; }
+.progress-bar-fill { height: 100%; background: var(--gradient-primary); transition: width var(--transition-slow); }
+
+/* ── Result header ── */
+.result-header {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-6);
+  flex-wrap: wrap;
+}
+.result-meta-label { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); }
+.result-title { font-size: var(--fs-h2); margin-top: var(--space-2); }
+.result-sub { margin-top: var(--space-2); color: var(--text-tertiary); font-size: var(--fs-sm); }
+.result-score-block { text-align: right; }
+.result-score { font-family: var(--font-mono); font-size: 2.6rem; font-weight: 800; line-height: 1; }
+.result-score span { font-size: 1.1rem; color: var(--text-tertiary); font-weight: 500; }
+.result-score-sub { margin-top: var(--space-1); font-size: var(--fs-xs); color: var(--text-tertiary); }
+
+/* ── Deliverable card ── */
+.deliverable-card { text-align: center; }
+.deliverable-icon { font-size: 2.2rem; margin-bottom: var(--space-3); }
+.deliverable-desc { color: var(--text-tertiary); font-size: var(--fs-xs); margin: var(--space-1) 0 var(--space-4); }
+
+/* ── History filters ── */
+.filters-row { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-6); align-items: flex-end; }
+.filters-row .field { margin-bottom: 0; flex: 1; min-width: 180px; }
+
+@media (max-width: 980px) {
+  /* Lot 47: `1fr` grows to the content's minimum width (a one-line nav, wide forms), so the whole page used to be
+     650–1180 px wide on a 390 px phone. `minmax(0, 1fr)` keeps the column at the screen width; the nav wraps. */
+  .app-shell { grid-template-columns: minmax(0, 1fr); }
+  .app-sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--space-3); min-width: 0; }
+  .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
+  .sidebar-footer { display: none; }
+  .app-sidebar .brand { padding-bottom: 0; margin-bottom: 0; }
+  .sidebar-account-links a { display: inline-block; padding: 0.5rem 0.25rem; }
+  .btn, .btn-sm, .sidebar-link { min-height: 40px; }
+  /* The result page lays out its panels with inline two-column grids: one column on a phone. */
+  .app-main [style*="grid-template-columns"] { grid-template-columns: minmax(0, 1fr) !important; }
+  .app-main .card, .app-main .callout { min-width: 0; overflow-wrap: anywhere; }
+  .app-main { padding: var(--space-6) var(--space-4) var(--space-8); }
+}
