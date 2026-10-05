@@ -114,7 +114,7 @@ pyflakes==3.1.0
 Pygments==2.21.0
 pylint==3.0.3
 pymupdf==1.28.2
-pypdf==6.18.1
+pypdf==6.19.0
 pytest==9.0.3
 pytest-benchmark==4.0.0
 pytest-cov==4.1.0
@@ -145,7 +145,7 @@ tqdm==4.70.1
 truststore==0.10.4
 typing-inspection==0.4.4
 typing_extensions==4.16.0
-urllib3==2.7.0
+urllib3==2.8.0
 uvicorn==0.52.4
 watchfiles==1.2.0
 websockets==16.1.1

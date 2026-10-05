@@ -21,7 +21,7 @@ coverage==7.3.2
 # Fixtures and utilities
 faker==21.0.0  # Generate fake data for tests
 hypothesis==6.92.0  # Property-based testing
-pypdf==6.18.1  # Extract text from generated PDFs to assert content markers, not just byte-diffs
+pypdf==6.19.0  # Extract text from generated PDFs to assert content markers, not just byte-diffs
 
 # Mocking external services
 responses==0.24.1  # Mock HTTP requests
